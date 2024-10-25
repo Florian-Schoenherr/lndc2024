@@ -50,6 +50,7 @@
 		"drizzle-orm": "^0.33.0",
 		"maplibre-gl": "^4.7.1",
 		"postgres": "^3.4.4",
-		"svelte-maplibre": "^0.9.14"
+		"svelte-maplibre": "^0.9.14",
+		"lucide-svelte": "^0.453.0"
 	}
 }
