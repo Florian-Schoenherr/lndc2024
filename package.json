@@ -48,6 +48,8 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"drizzle-orm": "^0.33.0",
-		"postgres": "^3.4.4"
+		"maplibre-gl": "^4.7.1",
+		"postgres": "^3.4.4",
+		"svelte-maplibre": "^0.9.14"
 	}
 }
