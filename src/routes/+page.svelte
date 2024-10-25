@@ -1,14 +1,10 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import type { PageData } from './$types';
-	import { Button, Modal, Label, Input, Checkbox } from 'flowbite-svelte';
+	import { Button, Modal, Label, Input } from 'flowbite-svelte';
 
 	let { data } = $props();
 	let eventIdeas = $state(data.eventIdeas);
 	let formModal = $state(true);
-
-	// export let data: PageData;
-	// $: eventIdeas = data.eventIdeas;
 
 	interface FormField {
 		name: string;

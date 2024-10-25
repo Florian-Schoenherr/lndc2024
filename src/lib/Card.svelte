@@ -1,26 +1,26 @@
 <script lang="ts">
-	import { Camera, Martini, Trees, Trophy } from 'lucide-svelte';
+	import { Camera, Martini, Trees, Trophy, CandyCane } from 'lucide-svelte';
 	import LikeButton from './LikeButton.svelte';
 	import type { EventIdea } from './types';
 
 	export let idea: EventIdea;
-	let color = 'black';
 </script>
 
 <a
-	href="#"
+	href={`/details/${idea.id}`}
 	class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
 >
 	<div class="flex gap-2 items-center">
 		{#if idea.icon == 'martini'}
-			<Martini {color} class="h-16 w-16" />
+			<Martini class="h-16 w-16 dark:stroke-white" />
 		{:else if idea.icon == 'camera'}
-			<Camera {color} class="h-16 w-16" />
+			<Camera class="h-16 w-16 dark:stroke-white" />
 		{:else if idea.icon == 'trees'}
-			<Trees {color} />
+			<Trees class="h-16 w-16 dark:stroke-white" />
 		{:else if idea.icon == 'trophy'}
-			<Trophy {color} />
-			<!-- // TODO: more -->
+			<Trophy class="h-16 w-16 dark:stroke-white" />
+		{:else if idea.icon == 'trophy'}
+			<CandyCane class="h-16 w-16 dark:stroke-white" />
 		{/if}
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{idea.title}
@@ -30,7 +30,7 @@
 		</div>
 	</div>
 
-	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl">
+	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl dark:text-white">
 		<div>
 			{idea.location.toString().slice(0, 6)}
 		</div>
