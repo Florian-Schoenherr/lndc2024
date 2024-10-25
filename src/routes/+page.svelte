@@ -8,6 +8,6 @@
 	// $: eventIdeas = data.eventIdeas;
 </script>
 
-{#each eventIdeas as { title, description, icon, likes }}
-	<Card {title} {description} {icon} {likes} />
+{#each eventIdeas as idea}
+	<Card {idea} />
 {/each}

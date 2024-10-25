@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({
 				icon: 'martini',
 				likes: 5,
 				location: [-122.420679, 37.772537],
-				date: new Date('2022-10-25'),
+				date: new Date(2022, 5, 12, 14, 30, 0),
 				visitorAmount: 3,
 				priceCents: 100,
 				creator: 'user'
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({
 				icon: 'martini',
 				likes: 10,
 				location: [-122.420679, 137.772537],
-				date: new Date('2022-10-25'),
+				date: new Date(2022, 5, 12, 18, 30, 0),
 				visitorAmount: 3,
 				priceCents: 100,
 				creator: 'user1'

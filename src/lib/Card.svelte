@@ -1,34 +1,46 @@
 <script lang="ts">
 	import { Camera, Martini, Trees, Trophy } from 'lucide-svelte';
 	import LikeButton from './LikeButton.svelte';
+	import type { EventIdea } from './types';
 
-	let { title, description, icon, likes } = $props();
-	let color = 'white';
+	export let idea: EventIdea;
+	let color = 'black';
 </script>
 
 <a
 	href="#"
 	class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
 >
-	<div class="flex gap-2">
-		{#if icon == 'martini'}
-			<Martini {color} />
-		{:else if icon == 'camera'}
-			<Camera {color} />
-		{:else if icon == 'trees'}
+	<div class="flex gap-2 items-center">
+		{#if idea.icon == 'martini'}
+			<Martini {color} class="h-16 w-16" />
+		{:else if idea.icon == 'camera'}
+			<Camera {color} class="h-16 w-16" />
+		{:else if idea.icon == 'trees'}
 			<Trees {color} />
-		{:else if icon == 'trophy'}
+		{:else if idea.icon == 'trophy'}
 			<Trophy {color} />
 			<!-- // TODO: more -->
 		{/if}
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-			{title}
+			{idea.title}
 		</h5>
-		<div class="self-end">
-			<LikeButton {likes} />
+		<div class="ml-auto">
+			<LikeButton likes={idea.likes} />
 		</div>
 	</div>
-	<p class="font-normal text-gray-700 dark:text-gray-400">
-		{description}
-	</p>
+
+	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl">
+		<div>
+			{idea.location.toString().slice(0, 6)}
+		</div>
+		<div>
+			{idea.date.toLocaleString().split(',')[1]}
+		</div>
+
+		<div>
+			{idea.date.toLocaleString().split(',')[0]}
+		</div>
+		<div></div>
+	</div>
 </a>
