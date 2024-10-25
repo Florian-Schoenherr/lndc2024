@@ -88,7 +88,7 @@
 			// Close the modal
 			formModal = false;
 
-			data.eventIdeas.push({
+			eventIdeas.push({
 				id: '3',
 				title: formData['title'],
 				description: formData['details'],
