@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import type { PageData } from './$types';
+
+	let { data } = $props();
+	let eventIdeas = $state(data.eventIdeas);
+	// export let data: PageData;
+	// $: eventIdeas = data.eventIdeas;
 </script>
 
-<h1 class="bg-indigo-600">Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-
-<Card
-	title="Title"
-	description="description description description description description description"
-	icon="martini"
-	likes={5}
-/>
+{#each eventIdeas as { title, description, icon, likes }}
+	<Card {title} {description} {icon} {likes} />
+{/each}
