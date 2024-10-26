@@ -5,11 +5,20 @@
 
 	export let idea: EventIdea;
 	export let link = false;
+	export let isLikedbyUser: boolean;
+	export let userID;
+
+	function toggleLike(e: Event): void {
+		if (isLikedbyUser) {
+			isLikedbyUser = false;
+		} else {
+			isLikedbyUser = true;
+		}
+	}
 </script>
 
 <svelte:element
-	this={link ? 'a' : 'div'}
-	href={link ? `/details/${idea.id}` : undefined}
+	this={link ? 'div' : 'div'}
 	class={'block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ' +
 		(link ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : '')}
 >
@@ -31,7 +40,12 @@
 			{idea.title}
 		</h5>
 		<div class="ml-auto">
-			<LikeButton likes={idea.likes} />
+			<form method="POST" action="?/changeLikeState">
+				<LikeButton click={toggleLike} likes={idea.likes} {isLikedbyUser} />
+				<input type="hidden" name="ideaID" value={idea.id} />
+				<input type="hidden" name="userID" value={userID} />
+				<input type="hidden" name="likedState" value={isLikedbyUser} />
+			</form>
 		</div>
 	</div>
 

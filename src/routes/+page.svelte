@@ -17,6 +17,7 @@
 
 	let mapModal = $state(false);
 	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
+
 	function openMap() {
 		mapModal = true;
 	}
@@ -24,15 +25,15 @@
 
 <!-- {#if !mapModal} -->
 {#each eventIdeas as idea}
-	<Card {idea} link />
+	<Card {idea} link isLikedbyUser={data.likedEventIds.includes(idea.id)} userID={data.clientId} />
 {/each}
 
 <Button class="fixed bottom-0 z-1 w-full h-14 text-2xl" on:click={() => (formModal = true)}
-	>Idee einreichen</Button
->
+	>Idee einreichen
+</Button>
 
 <Modal bind:open={formModal} size="xs" class="w-full">
-	<form class="flex flex-col space-y-6 h-160" action="#" method="POST">
+	<form class="flex flex-col space-y-6 h-160" action="?/submitIdea" method="POST">
 		<h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Idee einreichen</h3>
 
 		<Label class="space-y-1">
