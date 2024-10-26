@@ -15,6 +15,23 @@ export const session = pgTable('session', {
 	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
 });
 
+// export const eventidea = pgTable('eventidea', {
+// 	id: text('id').primaryKey(),
+// 	title: text('title').notNull(),
+// 	description: text('description').notNull(),
+// 	icon: text('icon').notNull(),
+// 	likes: integer('likes').notNull(),
+// 	location: text('location').notNull(),
+// 	date: timestamp('date').notNull(),
+// 	// here the name is different
+// 	visitorAmount: integer('visitors'),
+// 	// here the name is different
+// 	priceCents: integer('price'),
+// 	creator: text('user_id')
+// 		.notNull()
+// 		.references(() => user.id)
+// });
+
 export type Session = typeof session.$inferSelect;
 
 export type User = typeof user.$inferSelect;

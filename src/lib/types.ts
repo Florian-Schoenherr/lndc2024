@@ -3,6 +3,7 @@ import type { LngLatLike } from 'maplibre-gl';
 export type EventIdea = {
 	id: string;
 	location: LngLatLike;
+	townPrecomputed: string;
 	// timeOfDay: Time;
 	date: Date;
 	visitorAmount: number;

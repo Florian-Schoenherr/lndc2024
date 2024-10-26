@@ -1,10 +1,14 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { Button, Modal, Label, Input } from 'flowbite-svelte';
+	import MapDieKarte from '$lib/MapDieKarte.svelte';
+	import Portal from '$lib/Portal.svelte';
+	import { Button, Modal, Label, Input, Textarea } from 'flowbite-svelte';
+	import type { LngLatLike } from 'maplibre-gl';
+	import { tick } from 'svelte';
 
 	let { data } = $props();
 	let eventIdeas = $state(data.eventIdeas);
-	let formModal = $state(true);
+	let formModal = $state(false);
 
 	interface FormField {
 		name: string;
@@ -32,7 +36,7 @@
 			},
 			{
 				name: 'details',
-				value: (document.querySelector('input[name="details"]') as HTMLInputElement).value,
+				value: (document.querySelector('textarea[name="details"]') as HTMLInputElement).value,
 				required: true
 			},
 			{
@@ -73,6 +77,7 @@
 		];
 
 		for (const field of fields) {
+			console.dir(field);
 			if (field.required && !field.value) {
 				formIsValid = false;
 				break;
@@ -90,34 +95,40 @@
 				description: formData['details'],
 				icon: formData['icons'],
 				likes: 0,
-				location: [0, 0],
+				location: location!.lngLat,
+				townPrecomputed: location!.town,
 				date: new Date(2022, 5, 12, 14, 30, 0),
 				visitorAmount: Number(formData['visitorAmount']),
 				priceCents: Number(formData['visitorAmount']),
 				creator: 'user'
 			});
-			// Storing data in a global variable
-			//(window as any).globalFormData = formData;
-			//console.log('Form data saved:', formData);
+			// TODO: call action in +page.server.ts
 		} else {
-			//console.log('Please fill out all required fields.');
+			console.log('Please fill out all required fields.');
 		}
 	}
 
 	function closeForm() {
 		formModal = false;
 	}
+
+	let mapModal = $state(false);
+	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
+	function openMap() {
+		mapModal = true;
+	}
 </script>
 
+<!-- {#if !mapModal} -->
 {#each eventIdeas as idea}
-	<Card {idea} />
+	<Card {idea} link />
 {/each}
 
-<Button class="fixed bottom-0 z-1 w-full h-14 text-2xl" on:click={() => (formModal = false)}
+<Button class="fixed bottom-0 z-1 w-full h-14 text-2xl" on:click={() => (formModal = true)}
 	>Idee einreichen</Button
 >
 
-<Modal bind:open={formModal} size="xs" autoclose={true} class="w-full">
+<Modal bind:open={formModal} size="xs" class="w-full">
 	<form class="flex flex-col space-y-6 h-160" action="#">
 		<h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Idee einreichen</h3>
 
@@ -143,7 +154,7 @@
 
 		<Label class="space-y-2">
 			<span>Details</span>
-			<Input type="text" name="details" placeholder="Lets meet up together !" required />
+			<Textarea name="details" placeholder="Lets meet up together !" required />
 		</Label>
 
 		<Label>
@@ -170,7 +181,14 @@
 
 		<Label class="space-y-2">
 			<span>Ort</span>
-			<Input type="text" name="location" placeholder="Zwickau" required />
+			<Input
+				type="text"
+				name="location"
+				readonly
+				required
+				on:click={openMap}
+				value={location?.town}
+			/>
 		</Label>
 
 		<Label class="space-y-2">
@@ -191,3 +209,25 @@
 		</div>
 	</form>
 </Modal>
+<!-- {/if} -->
+{#if mapModal}
+	<Portal>
+		<MapDieKarte
+			saveLocation={async (lngLat: LngLatLike) => {
+				// ACHTUNG: MAX 1 MAL PRO SEKUNDE ERLAUBT (brauchen ne andere Lösung):
+				let response = await fetch(
+					`https://nominatim.openstreetmap.org/reverse?format=geojson&lat=${lngLat.lat}&lon=${lngLat.lng}`
+				);
+				let locatedObject = await response.json();
+				let town = locatedObject.features[0].properties.address.town;
+				console.log(town);
+
+				location = { lngLat, town };
+				mapModal = false;
+				// the hackiest shit code I ever wrote probably
+				await tick();
+				(document.querySelector('input[name="location"]') as HTMLInputElement).scrollIntoView();
+			}}
+		/>
+	</Portal>
+{/if}
