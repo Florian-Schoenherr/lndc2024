@@ -10,7 +10,8 @@
 <svelte:element
 	this={link ? 'a' : 'div'}
 	href={link ? `/details/${idea.id}` : undefined}
-	class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+	class={'block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ' +
+		(link ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : '')}
 >
 	<div class="flex gap-2 items-center">
 		{#if idea.icon == 'martini'}
@@ -34,16 +35,14 @@
 
 	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl dark:text-white">
 		<div>
-			{idea.location.toString().slice(0, 6)}
+			{idea.townPrecomputed}
 		</div>
 		<div>
-			{idea.date.toLocaleString().split(',')[1]}
+			{Intl.DateTimeFormat('de-DE', {
+				dateStyle: 'medium',
+				timeStyle: 'short'
+			}).format(idea.date)}
 		</div>
-
-		<div>
-			{idea.date.toLocaleString().split(',')[0]}
-		</div>
-		<div></div>
 	</div>
 	<slot />
 </svelte:element>

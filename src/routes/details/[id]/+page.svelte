@@ -3,7 +3,7 @@
 	import { Card as FlowCard } from 'flowbite-svelte';
 
 	let { data } = $props();
-	let { priceCents, location } = $state(data.eventIdea);
+	let { priceCents, description } = $state(data.eventIdea);
 </script>
 
 <Card idea={data.eventIdea}>
@@ -13,15 +13,6 @@
 		{(priceCents / 100).toLocaleString('de', { style: 'currency', currency: 'EUR' })}
 	</FlowCard>
 	<FlowCard>
-		Location:
-		{location.toString()}
-	</FlowCard>
-	<FlowCard>
-		Time:
-		{'todo'}
-	</FlowCard>
-	<FlowCard>
-		Date:
-		{'todo'}
+		{description}
 	</FlowCard>
 </Card>

@@ -3,6 +3,7 @@
 	import MapDieKarte from '$lib/MapDieKarte.svelte';
 	import Portal from '$lib/Portal.svelte';
 	import { Button, Modal, Label, Input, Textarea } from 'flowbite-svelte';
+	import { Locate, MapPin } from 'lucide-svelte';
 	import type { LngLatLike } from 'maplibre-gl';
 	import { tick } from 'svelte';
 
@@ -188,7 +189,12 @@
 				required
 				on:click={openMap}
 				value={location?.town}
-			/>
+			>
+				<svelte:fragment slot="left">
+					<!-- <Locate /> -->
+					<MapPin />
+				</svelte:fragment>
+			</Input>
 		</Label>
 
 		<Label class="space-y-2">
