@@ -17,15 +17,16 @@
 		required: boolean;
 	}
 
-	function submitForm(event: Event) {
+	async function submitForm(event: Event) {
 		event.preventDefault(); // Prevent the default form submission
 		let formIsValid = true;
 
 		const formData: { [key: string]: string } = {};
 
+		console.log(document.querySelector('input[name="iconSelect"]:checked') as HTMLInputElement);
 		const fields: FormField[] = [
 			{
-				name: 'iconSelect',
+				name: 'icon',
 				value: (document.querySelector('input[name="iconSelect"]:checked') as HTMLInputElement)
 					.value,
 				required: true
@@ -90,11 +91,11 @@
 			// Close the modal
 			formModal = false;
 
-			eventIdeas.push({
+			let newEventIdea = {
 				id: '3',
 				title: formData['title'],
 				description: formData['details'],
-				icon: formData['icons'],
+				icon: formData['icon'],
 				likes: 0,
 				location: location!.lngLat,
 				townPrecomputed: location!.town,
@@ -102,8 +103,13 @@
 				visitorAmount: Number(formData['visitorAmount']),
 				priceCents: Number(formData['visitorAmount']),
 				creator: 'user'
-			});
+			};
+			eventIdeas.push(newEventIdea);
 			// TODO: call action in +page.server.ts
+			const response = await fetch('/', {
+				method: 'POST',
+				body: JSON.stringify(newEventIdea)
+			});
 		} else {
 			console.log('Please fill out all required fields.');
 		}
@@ -137,12 +143,12 @@
 			<span>Icon</span>
 			<fieldset class="flex gap-2">
 				<label for="trophyRadioButton">
-					<input type="radio" id="trophyRadioButton" name="iconSelect" value="Trophy" checked />
+					<input type="radio" id="trophyRadioButton" name="iconSelect" value="trophy" checked />
 					Trophy
 				</label>
 
 				<label for="ballRadioBtn">
-					<input type="radio" id="ballRadioBtn" name="iconSelect" value="Ball" />
+					<input type="radio" id="ballRadioBtn" name="iconSelect" value="volleyball" />
 					Ball
 				</label>
 			</fieldset>

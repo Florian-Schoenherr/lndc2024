@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Camera, Martini, Trees, Trophy, CandyCane } from 'lucide-svelte';
+	import { Camera, Martini, Trees, Trophy, CandyCane, Volleyball } from 'lucide-svelte';
 	import LikeButton from './LikeButton.svelte';
 	import type { EventIdea } from './types';
 
@@ -22,8 +22,10 @@
 			<Trees class="h-16 w-16 dark:stroke-white" />
 		{:else if idea.icon == 'trophy'}
 			<Trophy class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'trophy'}
+		{:else if idea.icon == 'candycane'}
 			<CandyCane class="h-16 w-16 dark:stroke-white" />
+		{:else if idea.icon == 'volleyball'}
+			<Volleyball class="h-16 w-16 dark:stroke-white" />
 		{/if}
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{idea.title}
