@@ -43,7 +43,6 @@
 			<form method="POST" action="?/changeLikeState">
 				<LikeButton click={toggleLike} likes={idea.likes} {isLikedbyUser} />
 				<input type="hidden" name="ideaID" value={idea.id} />
-				<input type="hidden" name="userID" value={userID} />
 				<input type="hidden" name="likedState" value={isLikedbyUser} />
 			</form>
 		</div>

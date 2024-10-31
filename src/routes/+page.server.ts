@@ -1,43 +1,69 @@
 import { eventIdeas } from '$lib/data';
 import { db } from '$lib/server/db';
-import type { EventIdeaTableEntry } from '$lib/server/db/schema';
+import { user, type EventIdeaTableEntry } from '$lib/server/db/schema';
 import type { EventIdea } from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 
 let nextClientCookieId: number = 1;
-let persistedLikesPerUser = { 0: [] }; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
+let persistedLikesPerUser; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
 
 export const load: PageServerLoad = async ({
 	url,
 	params,
 	cookies
-}): Promise<{ clientId: number; eventIdeas: EventIdea[]; likedEventIds: any }> => {
+}): Promise<{ clientId: number; eventIdeas: EventIdea[]; likedEventIds: string[] }> => {
 	// const eventIdeas = await db.query.eventIdea.findMany();
-	let clientCookieId: number = cookies.get('clientID');
-	if (!persistedLikesPerUser[clientCookieId]) {
-		persistedLikesPerUser[clientCookieId] = [];
-	}
+
+	let expirationDate = new Date();
+	expirationDate.setDate(expirationDate.getDate() + 1000);
+
+	let clientCookieId: number = Number(cookies.get('clientID'));
+	console.log(`Loaded clientID ${clientCookieId} from cookie...`);
 
 	if (!clientCookieId) {
 		clientCookieId = nextClientCookieId;
-		cookies.set('clientID', nextClientCookieId.toString(), { path: '/' });
-
+		cookies.set('clientID', nextClientCookieId.toString(), {
+			path: '/',
+			expires: expirationDate,
+			secure: false
+		});
+		console.log(`Set clientID via Cookie ${clientCookieId}`);
 		nextClientCookieId++;
+	} else {
+		if (clientCookieId >= nextClientCookieId) {
+			nextClientCookieId = clientCookieId + 1;
+			console.log(`Increased nextClientID to ${nextClientCookieId}`);
+		}
+
+		cookies.set('clientID', clientCookieId.toString(), {
+			path: '/',
+			expires: expirationDate,
+			secure: false
+		});
+		console.log(`Renewed experiation Date of Cookie "clientID":${clientCookieId}.`);
 	}
 
 	///// Load persisted data for user //////////////
-	//transmit to the page which events the user had already liked.
-	let likeEntries = Object.values(persistedLikesPerUser); //get only the entries without userIDs e.g. [["1","2"],["1"]]
-	if (!likeEntries) {
-		likeEntries = [];
+	//transmit to the page which ideas the user had already liked.
+	if (!persistedLikesPerUser) {
+		persistedLikesPerUser = {};
 	}
 
-	let combinedLikeEntries = likeEntries.flat();
+	let currentUsersLikedIdeaIds = [];
+	if (persistedLikesPerUser[clientCookieId]) {
+		currentUsersLikedIdeaIds = persistedLikesPerUser[clientCookieId];
+	}
+
+	//caclulate the total sum of likes for each idea by iterating over all users.
+	let allLikeEntries = [];
+	allLikeEntries = Object.values(persistedLikesPerUser);
+
+	let combinedLikeEntries: string[] = allLikeEntries.flat();
 	console.log(`All persisted Like Entries: ${combinedLikeEntries}.`);
 
 	eventIdeas.forEach((idea) => {
-		let allEntriesForIdeaID = combinedLikeEntries.find((entry) => entry === idea.id);
+		let allEntriesForIdeaID = combinedLikeEntries.filter((entry) => entry === idea.id);
 		if (allEntriesForIdeaID) {
 			idea.likes = allEntriesForIdeaID.length;
 			console.log(`For Idea with ID ${idea.id} we restored ${allEntriesForIdeaID.length} likes.`);
@@ -45,8 +71,6 @@ export const load: PageServerLoad = async ({
 			idea.likes = 0;
 		}
 	});
-
-	let likedEventIds = persistedLikesPerUser[clientCookieId];
 
 	//console.log('Reloading page.');
 	//console.log('Event ideas: ');
@@ -66,7 +90,7 @@ export const load: PageServerLoad = async ({
 	return {
 		clientId: clientCookieId,
 		eventIdeas: eventIdeas,
-		likedEventIds: likedEventIds
+		likedEventIds: currentUsersLikedIdeaIds
 	};
 };
 
@@ -156,10 +180,10 @@ export const actions = {
 		const data = await request.formData();
 		console.log(data);
 
-		const userID = data.get('userID');
-		if (!userID) {
-			return fail(400, { userID, missing: true });
-		}
+		//const userID = data.get('userID');
+		//if (!userID) {
+		//	return fail(400, { userID, missing: true });
+		//}
 		const ideaID = data.get('ideaID');
 		if (!ideaID) {
 			return fail(400, { ideaID, missing: true });
@@ -169,6 +193,20 @@ export const actions = {
 			return fail(400, { likedState, missing: true });
 		}
 
+		let userID = cookies.get('clientID');
+
+		if (!userID) {
+			console.log(`userID ${userID} was not set..,`);
+			return fail(400, { userID, missing: true });
+		}
+
+		console.log(`Submitting like action with userID ${userID}`);
+
+		if (!persistedLikesPerUser[userID]) {
+			persistedLikesPerUser[userID] = [];
+		}
+
+		// Read form dat
 		if (likedState.toString() === 'true') {
 			//Add Likes
 			console.log('Called add Like');

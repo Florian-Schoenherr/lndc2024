@@ -5,7 +5,7 @@
 	import { Button, Modal, Label, Input, Textarea } from 'flowbite-svelte';
 	import { Locate, MapPin } from 'lucide-svelte';
 	import type { LngLatLike } from 'maplibre-gl';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	let { data } = $props();
 	let eventIdeas = $state(data.eventIdeas);
@@ -24,6 +24,7 @@
 </script>
 
 <!-- {#if !mapModal} -->
+
 {#each eventIdeas as idea}
 	<Card {idea} link isLikedbyUser={data.likedEventIds.includes(idea.id)} userID={data.clientId} />
 {/each}
@@ -113,7 +114,7 @@
 		</div>
 	</form>
 </Modal>
-<!-- {/if} -->
+
 {#if mapModal}
 	<Portal>
 		<MapDieKarte
