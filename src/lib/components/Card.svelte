@@ -6,7 +6,6 @@
 	export let idea: EventIdea;
 	export let link = false;
 	export let isLikedbyUser: boolean;
-	export let userID;
 
 	function toggleLike(e: Event): void {
 		if (isLikedbyUser) {
@@ -23,19 +22,9 @@
 		(link ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : '')}
 >
 	<div class="flex gap-2 items-center">
-		{#if idea.icon == 'martini'}
-			<Martini class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'camera'}
-			<Camera class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'trees'}
-			<Trees class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'trophy'}
-			<Trophy class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'candycane'}
-			<CandyCane class="h-16 w-16 dark:stroke-white" />
-		{:else if idea.icon == 'volleyball'}
-			<Volleyball class="h-16 w-16 dark:stroke-white" />
-		{/if}
+		<div class="h-16 w-16 dark:stroke-white align-middle text-5xl">
+			{idea.icon}
+		</div>
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{idea.title}
 		</h5>

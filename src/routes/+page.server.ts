@@ -1,4 +1,4 @@
-import { eventIdeas } from '$lib/data/data';
+import { emojiRanges, eventIdeas } from '$lib/data/data';
 import { db } from '$lib/server/db';
 import { user, type EventIdeaTableEntry } from '$lib/server/db/schema';
 import type { EventIdea } from '$lib/types';
@@ -8,6 +8,12 @@ import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
 
 let nextClientCookieId: number = 1;
 let persistedLikesPerUser; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
+
+function isEmoji(char) {
+	const codePoint = char.codePointAt(0); //get codepoint of first char.
+	console.log(`Checked char ${codePoint}`);
+	return emojiRanges.some(([start, end]) => codePoint >= start && codePoint <= end);
+}
 
 export const load: PageServerLoad = async ({
 	url,
@@ -114,7 +120,7 @@ export const actions = {
 		console.log(data);
 
 		const icon = data.get('icon');
-		if (!icon) {
+		if (!icon || !isEmoji(icon)) {
 			return fail(400, { icon, missing: true });
 		}
 

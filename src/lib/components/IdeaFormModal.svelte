@@ -1,16 +1,19 @@
 <script lang="ts">
 	import MapDieKarte from '$lib/components/SelectLocationMapModal.svelte';
+	import { emojiRanges } from '$lib/data/data';
 
 	import { Locate, MapPin } from 'lucide-svelte';
 	import type { LngLatLike } from 'maplibre-gl';
 	import { onMount, tick } from 'svelte';
+	import { on } from 'svelte/events';
 
 	let { size, isOpen = $bindable() } = $props();
 
 	let mapModal = $state(false);
-	let isOpen2 = false;
-
+	let isDropdownVisible = $state(false);
 	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
+
+	let emojiSelection: string[] = [];
 
 	function closeForm() {
 		isOpen = false;
@@ -19,6 +22,38 @@
 	function openMap() {
 		mapModal = true;
 	}
+
+	/* When the user clicks on the button,
+	toggle between hiding and showing the dropdown content */
+	function toggleDropdownVisbility() {
+		isDropdownVisible = !isDropdownVisible;
+	}
+
+	function updateIconInput(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+		let iconInput = document.getElementById('icon');
+
+		if (iconInput) {
+			let inputChar = event.currentTarget.textContent;
+			iconInput.value = inputChar;
+			toggleDropdownVisbility();
+		}
+	}
+
+	// Function to iterate through the ranges
+	function fillEmojiSelection() {
+		emojiRanges.forEach((range) => {
+			for (let codePoint = range[0]; codePoint <= range[1]; codePoint++) {
+				const emoji = String.fromCodePoint(codePoint);
+				emojiSelection.push(emoji);
+			}
+		});
+		console.log(emojiSelection);
+	}
+
+	//Called when component is initialized
+	onMount(() => {
+		fillEmojiSelection();
+	});
 </script>
 
 {#if isOpen}
@@ -43,7 +78,7 @@
 				<button
 					type="button"
 					class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-					onclick={closeForm()}
+					onclick={closeForm}
 				>
 					<svg
 						class="w-3 h-3"
@@ -72,24 +107,41 @@
 				class="flex h-5/6 flex-col space-y-6 overflow-y-scroll overflow-x-hidden"
 			>
 				<div class="space-y-1">
-					<label for="trophyRadioButton" class="block text-sm font-medium text-gray-700">Icon</label
-					>
-					<fieldset class="flex gap-2">
-						<label for="trophyRadioButton" class="flex items-center">
-							<input
-								type="radio"
-								id="trophyRadioButton"
-								name="icon"
-								value="trophy"
-								class="mr-2"
-								checked
-							/> Trophy
-						</label>
-						<label for="ballRadioBtn" class="flex items-center">
-							<input type="radio" id="ballRadioBtn" name="icon" value="volleyball" class="mr-2" />
-							Ball
-						</label>
-					</fieldset>
+					<label for="icon" class="block text-sm font-medium text-gray-700">Vorschaubild</label>
+					<input
+						type="text"
+						name="icon"
+						id="icon"
+						value="😎"
+						required
+						maxlength="1"
+						class="mt-1 w-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					/>
+
+					<!-- Dropdown component -->
+					<div class="relative inline-block">
+						<button
+							onclick={toggleDropdownVisbility}
+							class="bg-orange-400 text-white py-2 px-4 rounded focus:outline-none focus:bg-orange-600"
+						>
+							Auswahl
+						</button>
+						{#if isDropdownVisible}
+							<div
+								id="emoticonDropdown"
+								class="absolute bg-gray-100 shadow-lg rounded mt-2 py-2 w-100 z-10 max-h-40 overflow-y-scroll"
+							>
+								{#each emojiSelection as emoticon}
+									<div
+										onclick={updateIconInput}
+										class="block px-4 py-2 text-black hover:bg-gray-200"
+									>
+										{emoticon.toString()}
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
 				</div>
 
 				<div class="space-y-1">
@@ -180,7 +232,7 @@
 						required
 						value={location?.town}
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-						onclick={openMap()}
+						onclick={openMap}
 					/>
 					<input type="hidden" name="latitude" value={location?.lngLat.lat} />
 					<input type="hidden" name="longitude" value={location?.lngLat.lng} />
@@ -251,4 +303,43 @@
 {/if}
 
 <style>
+	/* Dropdown Button */
+	.dropbtn {
+		background-color: #3498db;
+		color: white;
+		padding: 16px;
+		font-size: 16px;
+		border: none;
+		cursor: pointer;
+	}
+
+	/* Dropdown button on hover & focus */
+	.dropbtn:hover,
+	.dropbtn:focus {
+		background-color: #2980b9;
+	}
+
+	/* The container <div> - needed to position the dropdown content */
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	/* Dropdown Content (Hidden by Default) */
+	.dropdown-content {
+		display: block;
+		position: absolute;
+		background-color: #f1f1f1;
+		min-width: 160px;
+		box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+		z-index: 1;
+	}
+
+	/* Links inside the dropdown */
+	.dropdown-content a {
+		color: black;
+		padding: 12px 16px;
+		text-decoration: none;
+		display: block;
+	}
 </style>
