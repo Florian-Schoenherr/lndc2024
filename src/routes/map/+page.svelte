@@ -1,5 +1,5 @@
 <script>
-	import MapDieKarte from '$lib/MapDieKarte.svelte';
+	import SelectLocationMapModal from '$lib/components/SelectLocationMapModal.svelte';
 </script>
 
-<MapDieKarte />
+<SelectLocationMapModal />

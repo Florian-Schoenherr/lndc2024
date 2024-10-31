@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from 'flowbite-svelte';
 	import type { MapMouseEvent } from 'maplibre-gl';
 	import { DefaultMarker, MapLibre } from 'svelte-maplibre';
 	import { type LngLatLike } from 'svelte-maplibre';
@@ -40,9 +39,6 @@
 	on:click={addMarker}
 	on:load={(event) => {
 		console.log('load', mapContainer);
-		let yes = mapContainer.style.bottom;
-		mapContainer.style.bottom = 5;
-		mapContainer.parentElement.style.bottom = yes;
 		map.resize();
 		console.log('was', map);
 		// map.reload();
@@ -54,10 +50,12 @@
 </MapLibre>
 
 {#if marker}
-	<Button
-		class="fixed bottom-10 z-1 w-full h-14 text-2xl"
-		on:click={() => saveLocation(marker!.lngLat)}>Location festlegen</Button
+	<button
+		class="fixed bottom-10 z-1 w-full h-14 text-2xl bg-orange-400 text-white font-bold rounded"
+		on:click={() => saveLocation(marker!.lngLat)}
 	>
+		Location festlegen
+	</button>
 {/if}
 
 <style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Camera, Martini, Trees, Trophy, CandyCane, Volleyball } from 'lucide-svelte';
 	import LikeButton from './LikeButton.svelte';
-	import type { EventIdea } from './types';
+	import type { EventIdea } from '../types';
 
 	export let idea: EventIdea;
 	export let link = false;

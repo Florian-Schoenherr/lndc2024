@@ -1,9 +1,10 @@
-import { eventIdeas } from '$lib/data';
+import { eventIdeas } from '$lib/data/data';
 import { db } from '$lib/server/db';
 import { user, type EventIdeaTableEntry } from '$lib/server/db/schema';
 import type { EventIdea } from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
+import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
 
 let nextClientCookieId: number = 1;
 let persistedLikesPerUser; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
@@ -96,8 +97,20 @@ export const load: PageServerLoad = async ({
 
 export const actions = {
 	submitIdea: async ({ cookies, request }) => {
-		const data = await request.formData();
+		let userID = cookies.get('clientID');
 
+		if (!userID) {
+			console.log(`userID ${userID} was not set..,`);
+			return fail(400, { userID, missing: true });
+		}
+
+		console.log(`Submitting like action with userID ${userID}`);
+
+		if (!persistedLikesPerUser[userID]) {
+			persistedLikesPerUser[userID] = [];
+		}
+
+		const data = await request.formData();
 		console.log(data);
 
 		const icon = data.get('icon');
@@ -157,8 +170,10 @@ export const actions = {
 
 		console.log('Alles eingelesen.');
 
+		let uuid = uuidv6();
+
 		let newEventIdea: EventIdea = {
-			id: '3',
+			id: uuid,
 			title: title.toString(),
 			description: details.toString(),
 			icon: icon.toString(),
@@ -168,7 +183,7 @@ export const actions = {
 			date: new Date(2022, 5, 12, 14, 30, 0),
 			visitorAmount: Number(visitorAmount),
 			priceCents: Number(price),
-			creator: 'user'
+			creator: userID
 		};
 
 		eventIdeas.push(newEventIdea);

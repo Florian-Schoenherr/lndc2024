@@ -1,18 +1,34 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
-	import { Card as FlowCard } from 'flowbite-svelte';
-
 	let { data } = $props();
-	let { priceCents, description } = $state(data.eventIdea);
+	let { priceCents, description, title, townPrecomputed, location, visitorAmount } = $state(
+		data.eventIdea
+	);
 </script>
 
-<Card idea={data.eventIdea}>
-	<FlowCard>
+<div>
+	<div class="w-full">
+		{title}
+	</div>
+
+	<div class="w-full">
 		Price:
 		<!-- {Math.floor(priceCents / 100)},{priceCents % 100}€ -->
 		{(priceCents / 100).toLocaleString('de', { style: 'currency', currency: 'EUR' })}
-	</FlowCard>
-	<FlowCard>
+	</div>
+
+	<div class="w-full">
 		{description}
-	</FlowCard>
-</Card>
+	</div>
+
+	<div class="w-full">
+		{townPrecomputed}
+	</div>
+
+	<div class="w-full">
+		{location}
+	</div>
+
+	<div class="w-full">
+		{visitorAmount}
+	</div>
+</div>

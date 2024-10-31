@@ -1,4 +1,4 @@
-import type { EventIdea } from './types';
+import type { EventIdea } from '$lib/types';
 
 export const eventIdeas: EventIdea[] = [
 	{
