@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Camera, Martini, Trees, Trophy, CandyCane, Volleyball } from 'lucide-svelte';
 	import LikeButton from './LikeButton.svelte';
-	import type { EventIdea } from '../types';
+	import { localizations, locationRadiusConstraint, type EventIdea } from '../types';
 
 	export let idea: EventIdea;
 	export let link = false;
@@ -39,13 +38,23 @@
 
 	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl dark:text-white">
 		<div>
-			{idea.townPrecomputed}
+			🖈 {idea.locationName}
+			+{locationRadiusConstraint[idea.locationRadius].max} m
 		</div>
 		<div>
-			{Intl.DateTimeFormat('de-DE', {
-				dateStyle: 'medium',
-				timeStyle: 'short'
-			}).format(idea.date)}
+			Von: {Intl.DateTimeFormat('de-DE', {
+				dateStyle: 'medium'
+			}).format(idea.dateRange.minDate)}
+
+			Bis: {Intl.DateTimeFormat('de-DE', {
+				dateStyle: 'medium'
+			}).format(idea.dateRange.maxDate)}
+		</div>
+		<div>
+			{localizations.emoticon.timeOfDayConstraint[idea.timeOfDay]}
+		</div>
+		<div>
+			{localizations.emoticon.priceConstraint[idea.price]}
 		</div>
 	</div>
 	<slot />

@@ -1,10 +1,17 @@
 import { emojiRanges, eventIdeas } from '$lib/data/data';
 import { db } from '$lib/server/db';
 import { user, type EventIdeaTableEntry } from '$lib/server/db/schema';
-import type { EventIdea } from '$lib/types';
+import {
+	GroupSize,
+	LocationRadius,
+	Price,
+	TimeOfDay,
+	TimeOfDayOption,
+	type EventIdea
+} from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
-import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
+import { v6 as uuidv6 } from 'uuid';
 
 let nextClientCookieId: number = 1;
 let persistedLikesPerUser; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
@@ -13,6 +20,16 @@ function isEmoji(char) {
 	const codePoint = char.codePointAt(0); //get codepoint of first char.
 	console.log(`Checked char ${codePoint}`);
 	return emojiRanges.some(([start, end]) => codePoint >= start && codePoint <= end);
+}
+
+function mapStringToEnum(input, enumType) {
+	const enumValue = enumType[input];
+	if (!enumValue) {
+		throw new Error(
+			`Invalid enum value ${input} for ${enumType}. Must be one of: ${Object.keys(enumType).join(', ')}`
+		);
+	}
+	return enumValue;
 }
 
 export const load: PageServerLoad = async ({
@@ -103,6 +120,13 @@ export const load: PageServerLoad = async ({
 
 export const actions = {
 	submitIdea: async ({ cookies, request }) => {
+		// Validation helper function
+		const validateField = (fieldName, fieldValue) => {
+			if (!fieldValue) {
+				return fail(400, { [fieldName]: fieldValue, missing: true });
+			}
+		};
+
 		let userID = cookies.get('clientID');
 
 		if (!userID) {
@@ -119,79 +143,68 @@ export const actions = {
 		const data = await request.formData();
 		console.log(data);
 
+		// Validate required fields
+		validateField('icon', data.get('icon'));
 		const icon = data.get('icon');
-		if (!icon || !isEmoji(icon)) {
-			return fail(400, { icon, missing: true });
+
+		if (!isEmoji(icon)) {
+			return fail(400, { icon, invalid: true });
 		}
 
 		const title = data.get('title');
-		if (!title) {
-			return fail(400, { title, missing: true });
-		}
-
-		const details = data.get('details');
-		if (!details) {
-			return fail(400, { details, missing: true });
-		}
-
+		validateField('title', title);
+		const description = data.get('description');
+		validateField('description', description);
 		const startDate = data.get('startDate');
-		if (!startDate) {
-			return fail(400, { startDate, missing: true });
-		}
-
+		validateField('startDate', startDate);
 		const startTime = data.get('startTime');
-		if (!startDate) {
-			return fail(400, { startTime, missing: true });
-		}
-
+		validateField('startTime', startTime);
 		const endDate = data.get('endDate');
-		if (!startDate) {
-			return fail(400, { endDate, missing: true });
-		}
-
-		const price = data.get('price');
-		if (!price) {
-			return fail(400, { endDate, missing: true });
-		}
-
+		validateField('endDate', endDate);
 		const town = data.get('town');
-		if (!town) {
-			return fail(400, { town, missing: true });
-		}
-
+		validateField('town', town);
 		const latitude = data.get('latitude');
-		if (!latitude) {
-			return fail(400, { latitude, missing: true });
-		}
-
+		validateField('latitude', latitude);
 		const longitude = data.get('longitude');
-		if (!longitude) {
-			return fail(400, { longitude, missing: true });
-		}
+		validateField('longitude', longitude);
 
-		const visitorAmount = data.get('visitorAmount');
-		if (!visitorAmount) {
-			return fail(400, { visitorAmount, missing: true });
-		}
+		// Derive enums from the form data
+		const timeOfDay = data.get('timeOfDay'); // Assuming the user inputs this
+		validateField('timeOfDay', timeOfDay);
 
-		console.log('Alles eingelesen.');
+		const groupSize = data.get('groupSize'); // Assuming the user inputs this
+		validateField('groupSize', groupSize);
 
-		let uuid = uuidv6();
+		const price = data.get('price'); // Assuming the user inputs this
+		validateField('price', price);
 
-		let newEventIdea: EventIdea = {
+		const locationRadius = data.get('locationRadius'); // Assuming the user inputs this
+		validateField('locationRadius', locationRadius);
+
+		console.log('All data read successfully.');
+
+		const uuid = uuidv6();
+
+		let newEventIdea = {
 			id: uuid,
-			title: title.toString(),
-			description: details.toString(),
-			icon: icon.toString(),
+			creatorId: userID,
 			likes: 0,
-			location: [Number(longitude), Number(latitude)],
-			townPrecomputed: town.toString(),
-			date: new Date(2022, 5, 12, 14, 30, 0),
-			visitorAmount: Number(visitorAmount),
-			priceCents: Number(price),
-			creator: userID
+			title: title?.toString(),
+			icon: icon?.toString(),
+			description: description?.toString(),
+			timeOfDay: timeOfDay,
+			groupSize: groupSize,
+			price: price,
+			dateRange: {
+				startDate: new Date(2024, 12, 10, 0, 0, 0),
+				endDate: new Date(2024, 12, 12, 0, 0, 0)
+			},
+			locationRadius: locationRadius,
+			locationCoordinates: [-122.420679, 37.772537],
+			locationName: 'Zwickau'
 		};
 
+		// Push the new event idea to your storage
 		eventIdeas.push(newEventIdea);
 		return { success: true };
 	},

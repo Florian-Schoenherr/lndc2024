@@ -1,11 +1,20 @@
 <script lang="ts">
 	import MapDieKarte from '$lib/components/SelectLocationMapModal.svelte';
 	import { emojiRanges } from '$lib/data/data';
+	import {
+		GroupSizeOption,
+		localizations,
+		LocationRadiusOption,
+		PriceOption,
+		TimeOfDayOption,
+		priceConstraint,
+		groupSizeConstraint,
+		locationRadiusConstraint,
+		timeOfDayConstraint
+	} from '$lib/types';
 
-	import { Locate, MapPin } from 'lucide-svelte';
 	import type { LngLatLike } from 'maplibre-gl';
 	import { onMount, tick } from 'svelte';
-	import { on } from 'svelte/events';
 
 	let { size, isOpen = $bindable() } = $props();
 
@@ -39,6 +48,16 @@
 		}
 	}
 
+	// Helper function to convert enum to array
+	function enumToArray<T>(enumObj: T): Array<{ value: string; label: string }> {
+		return Object.keys(enumObj)
+			.filter((key) => isNaN(Number(key))) // Filter out numeric keys
+			.map((key) => ({
+				value: enumObj[key as keyof T],
+				label: key
+			}));
+	}
+
 	// Function to iterate through the ranges
 	function fillEmojiSelection() {
 		emojiRanges.forEach((range) => {
@@ -57,20 +76,12 @@
 </script>
 
 {#if isOpen}
-	<!-- Main modal -->
 	<div
 		id="ideaModal"
 		tabindex="-1"
-		class="overflow-y-auto overflow-x-hidden fixed top-0 right-0
-        left-0 z-10 justify-center
-        items-center
-        md:inset-0 h-[calc(100%-1rem)]
-        p-4 w-full max-h-full bg-white rounded-lg shadow dark:bg-gray-700"
+		class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-10 justify-center items-center md:inset-0 h-[calc(100%-1rem)] p-4 w-full max-h-full bg-white rounded-lg shadow dark:bg-gray-700"
 	>
-		<!-- Modal content -->
-
 		<div class="relative h-5/6">
-			<!-- Modal header -->
 			<div
 				class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
 			>
@@ -99,7 +110,6 @@
 				</button>
 			</div>
 
-			<!-- Modal body -->
 			<form
 				id="ideaForm"
 				action="?/submitIdea"
@@ -117,15 +127,12 @@
 						maxlength="1"
 						class="mt-1 w-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 					/>
-
-					<!-- Dropdown component -->
 					<div class="relative inline-block">
 						<button
 							onclick={toggleDropdownVisbility}
 							class="bg-orange-400 text-white py-2 px-4 rounded focus:outline-none focus:bg-orange-600"
+							>Auswahl</button
 						>
-							Auswahl
-						</button>
 						{#if isDropdownVisible}
 							<div
 								id="emoticonDropdown"
@@ -157,10 +164,12 @@
 				</div>
 
 				<div class="space-y-2">
-					<label for="details" class="block text-sm font-medium text-gray-700">Details</label>
+					<label for="description" class="block text-sm font-medium text-gray-700"
+						>Description</label
+					>
 					<textarea
-						id="details"
-						name="details"
+						id="description"
+						name="description"
 						placeholder="Lets meet up together!"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -207,19 +216,23 @@
 					</fieldset>
 				</div>
 
+				<!-- Price Category -->
 				<div class="space-y-2">
 					<label for="price" class="block text-sm font-medium text-gray-700">Preis in €</label>
-					<input
-						type="number"
+					<select
 						id="price"
 						name="price"
-						placeholder="10"
-						min="1"
-						max="1000"
-						step="any"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					/>
+					>
+						{#each enumToArray(PriceOption) as { value, label }}
+							<option {value}
+								>{localizations.de.priceConstraint[value]} ({priceConstraint[value].min} € - {priceConstraint[
+									value
+								].max} €)</option
+							>
+						{/each}
+					</select>
 				</div>
 
 				<div class="space-y-2">
@@ -242,37 +255,70 @@
 					<label for="visitorAmount" class="block text-sm font-medium text-gray-700"
 						>Besucherzahl</label
 					>
-					<input
-						type="number"
-						id="visitorAmount"
-						name="visitorAmount"
-						placeholder="5"
-						min="1"
-						max="1000"
-						step="any"
+					<select
+						id="groupSize"
+						name="groupSize"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					/>
+					>
+						{#each enumToArray(GroupSizeOption) as { value, label }}
+							<option {value}
+								>{localizations.de.groupSizeConstraint[value]} ({groupSizeConstraint[value].min} - {groupSizeConstraint[
+									value
+								].max})</option
+							>
+						{/each}
+					</select>
+				</div>
+
+				<div class="space-y-2">
+					<label for="locationRadius" class="block text-sm font-medium text-gray-700"
+						>Radius wählen</label
+					>
+					<select
+						id="locationRadius"
+						name="locationRadius"
+						required
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					>
+						{#each enumToArray(LocationRadiusOption) as { value, label }}
+							<option {value}
+								>{localizations.de.locationRadiusConstraint[value]} (bis {locationRadiusConstraint[
+									value
+								].max} m )</option
+							>
+						{/each}
+					</select>
+				</div>
+
+				<div class="space-y-2">
+					<label class="block text-sm font-medium text-gray-700">Bevorzugte Tageszeit</label>
+					<select
+						id="timeOfDay"
+						name="timeOfDay"
+						required
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					>
+						{#each enumToArray(TimeOfDayOption) as { value, label }}
+							<option {value}
+								>{localizations.de.timeOfDayConstraint[value]} ({timeOfDayConstraint[
+									value
+								].min.toLocaleTimeString()} - {timeOfDayConstraint[
+									value
+								].max.toLocaleTimeString()})</option
+							>
+						{/each}
+					</select>
+				</div>
+
+				<div class="mt-4">
+					<button
+						type="submit"
+						class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						>Einreichen</button
+					>
 				</div>
 			</form>
-		</div>
-
-		<!-- Modal footer -->
-		<div
-			class="fixed bottom-0 left-0 right-0 w-full flex align-middle justify-evenly p-4 md:p-5 h-20 border-t border-gray-200 bg-white dark:bg-gray-800 rounded-b dark:border-gray-600"
-		>
-			<button
-				type="button"
-				onclick={closeForm()}
-				class="w-2/5 ml-3 bg-gray-100 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:bg-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-				>Zurück
-			</button>
-			<input
-				type="submit"
-				form="ideaForm"
-				class=" w-2/5 ml-3 text-white bg-orange-400 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:bg-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:bg-orange-800"
-				value="Absenden"
-			/>
 		</div>
 	</div>
 {/if}
@@ -303,43 +349,4 @@
 {/if}
 
 <style>
-	/* Dropdown Button */
-	.dropbtn {
-		background-color: #3498db;
-		color: white;
-		padding: 16px;
-		font-size: 16px;
-		border: none;
-		cursor: pointer;
-	}
-
-	/* Dropdown button on hover & focus */
-	.dropbtn:hover,
-	.dropbtn:focus {
-		background-color: #2980b9;
-	}
-
-	/* The container <div> - needed to position the dropdown content */
-	.dropdown {
-		position: relative;
-		display: inline-block;
-	}
-
-	/* Dropdown Content (Hidden by Default) */
-	.dropdown-content {
-		display: block;
-		position: absolute;
-		background-color: #f1f1f1;
-		min-width: 160px;
-		box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-		z-index: 1;
-	}
-
-	/* Links inside the dropdown */
-	.dropdown-content a {
-		color: black;
-		padding: 12px 16px;
-		text-decoration: none;
-		display: block;
-	}
 </style>

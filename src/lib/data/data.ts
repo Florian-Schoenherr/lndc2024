@@ -1,31 +1,47 @@
-import type { EventIdea } from '$lib/types';
+import {
+	GroupSizeOption,
+	LocationRadiusOption,
+	PriceOption,
+	TimeOfDayOption,
+	type EventIdea
+} from '$lib/types';
 
 export const eventIdeas: EventIdea[] = [
 	{
 		id: '1',
-		title: 'Weihnachtsfeier',
-		description: 'description description description description description description',
-		icon: '🍸',
+		creatorId: 'user1',
 		likes: 0,
-		location: [-122.420679, 37.772537],
-		townPrecomputed: 'Zwickau',
-		date: new Date(2022, 5, 12, 14, 30, 0),
-		visitorAmount: 3,
-		priceCents: 100,
-		creator: 'user1'
+		title: 'Weihnachtsfeier',
+		icon: '🍸',
+		description: 'HoHoHo',
+		timeOfDay: TimeOfDayOption.Evening,
+		groupSize: GroupSizeOption.Medium,
+		price: PriceOption.VeryCheap,
+		dateRange: {
+			minDate: new Date(2024, 12, 10, 0, 0, 0),
+			maxDate: new Date(2024, 12, 12, 0, 0, 0)
+		},
+		locationRadius: LocationRadiusOption.Small,
+		locationCoordinates: [-122.420679, 37.772537],
+		locationName: 'Zwickau'
 	},
 	{
 		id: '2',
-		title: 'Halloween',
-		description: 'description description description description description description',
-		icon: '⚽',
+		creatorId: 'user2',
 		likes: 0,
-		location: [-122.420679, 137.772537],
-		townPrecomputed: 'Zwickau',
-		date: new Date(2022, 5, 12, 18, 30, 0),
-		visitorAmount: 3,
-		priceCents: 100,
-		creator: 'user2'
+		title: 'Haloween Kicker',
+		icon: '⚽',
+		description: 'Huuuuhhuuuu',
+		timeOfDay: TimeOfDayOption.Evening,
+		groupSize: GroupSizeOption.Medium,
+		price: PriceOption.VeryCheap,
+		dateRange: {
+			minDate: new Date(2024, 12, 13, 0, 0, 0),
+			maxDate: new Date(2024, 12, 14, 0, 0, 0)
+		},
+		locationRadius: LocationRadiusOption.Small,
+		locationCoordinates: [-122.420679, 137.772537],
+		locationName: 'Zwickau'
 	}
 ];
 
