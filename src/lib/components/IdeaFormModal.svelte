@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MapDieKarte from '$lib/components/SelectLocationMapModal.svelte';
-	import { emojiRanges } from '$lib/data/data';
+	import { iconRanges } from '$lib/data/data';
 	import {
 		GroupSizeOption,
 		localizations,
@@ -22,7 +22,8 @@
 	let isDropdownVisible = $state(false);
 	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
 
-	let emojiSelection: string[] = [];
+	let iconSelection: string[] = [];
+	let monthSelection: Date[] = [];
 
 	function closeForm() {
 		isOpen = false;
@@ -58,20 +59,28 @@
 			}));
 	}
 
-	// Function to iterate through the ranges
-	function fillEmojiSelection() {
-		emojiRanges.forEach((range) => {
+	function fillIconSelection() {
+		iconRanges.forEach((range) => {
 			for (let codePoint = range[0]; codePoint <= range[1]; codePoint++) {
-				const emoji = String.fromCodePoint(codePoint);
-				emojiSelection.push(emoji);
+				const icon = String.fromCodePoint(codePoint);
+				iconSelection.push(icon);
 			}
 		});
-		console.log(emojiSelection);
+		console.log(iconSelection);
+	}
+
+	function fillMonthSelection() {
+		for (let index = 0; index < 12; index++) {
+			const monthRepresentation = new Date();
+			monthRepresentation.setMonth(index);
+			monthSelection.push(monthRepresentation);
+		}
 	}
 
 	//Called when component is initialized
 	onMount(() => {
-		fillEmojiSelection();
+		fillIconSelection();
+		fillMonthSelection();
 	});
 </script>
 
@@ -138,7 +147,7 @@
 								id="emoticonDropdown"
 								class="absolute bg-gray-100 shadow-lg rounded mt-2 py-2 w-100 z-10 max-h-40 overflow-y-scroll"
 							>
-								{#each emojiSelection as emoticon}
+								{#each iconSelection as emoticon}
 									<div
 										onclick={updateIconInput}
 										class="block px-4 py-2 text-black hover:bg-gray-200"
@@ -165,7 +174,7 @@
 
 				<div class="space-y-2">
 					<label for="description" class="block text-sm font-medium text-gray-700"
-						>Description</label
+						>Beschreibung</label
 					>
 					<textarea
 						id="description"
@@ -177,43 +186,41 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700">Zeitraum wählen</label>
-					<fieldset class="space-y-2">
-						<div class="space-y-2">
-							<label for="startDate" class="block text-sm font-medium text-gray-700">Von</label>
-							<input
-								type="date"
-								id="startDate"
-								name="startDate"
-								required
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							/>
-							<input
-								type="time"
-								id="startTime"
-								name="startTime"
-								required
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							/>
-						</div>
-						<div class="space-y-2">
-							<label for="endDate" class="block text-sm font-medium text-gray-700">Bis</label>
-							<input
-								type="date"
-								id="endDate"
-								name="endDate"
-								required
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							/>
-							<input
-								type="time"
-								id="endTime"
-								name="endTime"
-								required
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							/>
-						</div>
-					</fieldset>
+					<label class="block text-sm font-medium text-gray-700">Wunsch-Zeitraum wählen</label>
+
+					<div class="space-y-2">
+						<label for="startDate" class="block text-sm font-medium text-gray-700">Von</label>
+						<select
+							id="startDate"
+							name="startDate"
+							required
+							class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						>
+							{#each monthSelection as monthOption}
+								<option value={monthOption}
+									>{Intl.DateTimeFormat('default', {
+										month: 'long'
+									}).format(monthOption)}</option
+								>
+							{/each}
+						</select>
+					</div>
+
+					<label for="endDate" class="block text-sm font-medium text-gray-700">Bis</label>
+					<select
+						id="endDate"
+						name="endDate"
+						required
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					>
+						{#each monthSelection as monthOption}
+							<option value={monthOption}
+								>{Intl.DateTimeFormat('default', {
+									month: 'long'
+								}).format(monthOption)}</option
+							>
+						{/each}
+					</select>
 				</div>
 
 				<!-- Price Category -->
@@ -303,9 +310,12 @@
 							<option {value}
 								>{localizations.de.timeOfDayConstraint[value]} ({timeOfDayConstraint[
 									value
-								].min.toLocaleTimeString()} - {timeOfDayConstraint[
+								].min.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })} - {timeOfDayConstraint[
 									value
-								].max.toLocaleTimeString()})</option
+								].max.toLocaleTimeString('default', {
+									hour: '2-digit',
+									minute: '2-digit'
+								})})</option
 							>
 						{/each}
 					</select>

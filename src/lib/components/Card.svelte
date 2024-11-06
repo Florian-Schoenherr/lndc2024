@@ -17,7 +17,7 @@
 
 <svelte:element
 	this={link ? 'div' : 'div'}
-	class={'block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ' +
+	class={'block px-5 py-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ' +
 		(link ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : '')}
 >
 	<div class="flex gap-2 items-center">
@@ -36,24 +36,23 @@
 		</div>
 	</div>
 
-	<div class="flex flex-row w-full gap-5 mt-5 justify-evenly text-xl dark:text-white">
-		<div>
+	<div class="px-3 flex flex-row w-full justify-between items-center text-xl dark:text-white cent">
+		<div class="text-2xl">
 			🖈 {idea.locationName}
-			+{locationRadiusConstraint[idea.locationRadius].max} m
 		</div>
 		<div>
-			Von: {Intl.DateTimeFormat('de-DE', {
-				dateStyle: 'medium'
+			{Intl.DateTimeFormat('default', {
+				month: 'long'
 			}).format(idea.dateRange.minDate)}
-
-			Bis: {Intl.DateTimeFormat('de-DE', {
-				dateStyle: 'medium'
+			-<br />
+			{Intl.DateTimeFormat('default', {
+				month: 'long'
 			}).format(idea.dateRange.maxDate)}
 		</div>
-		<div>
+		<div class="text-3xl">
 			{localizations.emoticon.timeOfDayConstraint[idea.timeOfDay]}
 		</div>
-		<div>
+		<div class="text-2xl">
 			{localizations.emoticon.priceConstraint[idea.price]}
 		</div>
 	</div>

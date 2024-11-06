@@ -1,4 +1,4 @@
-import { emojiRanges, eventIdeas } from '$lib/data/data';
+import { eventIdeas, iconRanges } from '$lib/data/data';
 import { db } from '$lib/server/db';
 import { user, type EventIdeaTableEntry } from '$lib/server/db/schema';
 import {
@@ -16,10 +16,10 @@ import { v6 as uuidv6 } from 'uuid';
 let nextClientCookieId: number = 1;
 let persistedLikesPerUser; //{userID: ["ideaID1","ideaId2"]} // 2: ["1"]}
 
-function isEmoji(char) {
+function isIcon(char) {
 	const codePoint = char.codePointAt(0); //get codepoint of first char.
 	console.log(`Checked char ${codePoint}`);
-	return emojiRanges.some(([start, end]) => codePoint >= start && codePoint <= end);
+	return iconRanges.some(([start, end]) => codePoint >= start && codePoint <= end);
 }
 
 function mapStringToEnum(input, enumType) {
@@ -147,7 +147,7 @@ export const actions = {
 		validateField('icon', data.get('icon'));
 		const icon = data.get('icon');
 
-		if (!isEmoji(icon)) {
+		if (!isIcon(icon)) {
 			return fail(400, { icon, invalid: true });
 		}
 
@@ -157,8 +157,6 @@ export const actions = {
 		validateField('description', description);
 		const startDate = data.get('startDate');
 		validateField('startDate', startDate);
-		const startTime = data.get('startTime');
-		validateField('startTime', startTime);
 		const endDate = data.get('endDate');
 		validateField('endDate', endDate);
 		const town = data.get('town');
