@@ -6,11 +6,15 @@ import {
 	type EventIdea
 } from '$lib/types';
 
+export const likeDictionary: LikeDictionary = {
+	'1': ['user1', 'user2'],
+	'2': ['user1']
+};
+
 export const eventIdeas: EventIdea[] = [
 	{
 		id: '1',
 		creatorId: 'user1',
-		likes: 0,
 		title: 'Weihnachtsfeier',
 		icon: '🍸',
 		description: 'HoHoHo',
@@ -28,7 +32,6 @@ export const eventIdeas: EventIdea[] = [
 	{
 		id: '2',
 		creatorId: 'user2',
-		likes: 0,
 		title: 'Haloween Kicker',
 		icon: '⚽',
 		description: 'Huuuuhhuuuu',

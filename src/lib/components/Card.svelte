@@ -4,7 +4,8 @@
 
 	export let idea: EventIdea;
 	export let link = false;
-	export let isLikedbyUser: boolean;
+	export let isLikedbyUser: boolean = false;
+	export let likeAmount: number = 0;
 
 	function toggleLike(e: Event): void {
 		if (isLikedbyUser) {
@@ -28,8 +29,8 @@
 			{idea.title}
 		</h5>
 		<div class="ml-auto">
-			<form method="POST" action="?/changeLikeState">
-				<LikeButton click={toggleLike} likes={idea.likes} {isLikedbyUser} />
+			<form method="POST" action="api/ideas/likes">
+				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
 				<input type="hidden" name="ideaID" value={idea.id} />
 				<input type="hidden" name="likedState" value={isLikedbyUser} />
 			</form>

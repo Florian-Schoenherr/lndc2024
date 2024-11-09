@@ -66,7 +66,7 @@
 				iconSelection.push(icon);
 			}
 		});
-		console.log(iconSelection);
+		//console.log(iconSelection);
 	}
 
 	function fillMonthSelection() {
@@ -121,7 +121,7 @@
 
 			<form
 				id="ideaForm"
-				action="?/submitIdea"
+				action="/api/ideas"
 				method="POST"
 				class="flex h-5/6 flex-col space-y-6 overflow-y-scroll overflow-x-hidden"
 			>
@@ -179,7 +179,7 @@
 					<textarea
 						id="description"
 						name="description"
-						placeholder="Lets meet up together!"
+						placeholder="Lass uns etwas unternehmen !"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 					></textarea>
@@ -189,10 +189,10 @@
 					<label class="block text-sm font-medium text-gray-700">Wunsch-Zeitraum wählen</label>
 
 					<div class="space-y-2">
-						<label for="startDate" class="block text-sm font-medium text-gray-700">Von</label>
+						<label for="minDate" class="block text-sm font-medium text-gray-700">Von</label>
 						<select
-							id="startDate"
-							name="startDate"
+							id="minDate"
+							name="minDate"
 							required
 							class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 						>
@@ -206,10 +206,10 @@
 						</select>
 					</div>
 
-					<label for="endDate" class="block text-sm font-medium text-gray-700">Bis</label>
+					<label for="maxDate" class="block text-sm font-medium text-gray-700">Bis</label>
 					<select
-						id="endDate"
-						name="endDate"
+						id="maxDate"
+						name="maxDate"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 					>

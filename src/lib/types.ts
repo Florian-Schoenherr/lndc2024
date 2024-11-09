@@ -187,12 +187,9 @@ function createBoundaryTime(hour: number, minute: number): Date {
 	return date;
 }
 
-// Beispiel einer Validierungsfunktion
-
 export class EventIdea {
 	id: string;
 	creatorId: string;
-	likes: number;
 
 	title: string;
 	icon: string;
@@ -209,7 +206,6 @@ export class EventIdea {
 	constructor(
 		id: string,
 		creatorId: string,
-		likes: number,
 		title: string,
 		icon: string,
 		description: string,
@@ -225,7 +221,6 @@ export class EventIdea {
 		this.locationCoordinates = locationCoordinates;
 		this.locationName = locationName;
 		this.creatorId = creatorId;
-		this.likes = likes;
 		this.title = title;
 		this.icon = icon;
 		this.description = description;
@@ -257,3 +252,7 @@ function isWithinDistanceRange(wishedDistance: number, radius: LocationRadiusOpt
 	const distanceRange = locationRadiusConstraint[radius];
 	return wishedDistance >= distanceRange.min && wishedDistance <= distanceRange.max;
 }
+
+export type LikeDictionary = {
+	[key: string]: string[]; //key: objectID, value: list of liking users identified by ID
+};

@@ -11,7 +11,12 @@
 <!-- {#if !mapModal} -->
 <h1 class="text-4xl font-bold p-2 text-center">Eventideen</h1>
 {#each eventIdeas as idea}
-	<Card {idea} link isLikedbyUser={data.likedEventIds.includes(idea.id)} userID={data.clientId} />
+	<Card
+		{idea}
+		link={false}
+		isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
+		likeAmount={data.eventIdeasLikeAmount[idea.id]}
+	/>
 {/each}
 
 <button

@@ -5,7 +5,7 @@
 
 <button
 	class="mb-2 flex items-center gap-1 text-2xl font-bold tracking-tight text-green-400 dark:text-white"
-	on:click={click}
+	onclick={click}
 	type="submit"
 >
 	{likes}
