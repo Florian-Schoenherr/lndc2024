@@ -1,4 +1,11 @@
 import { eventIdeas, iconRanges } from '$lib/data/data';
+import {
+	GroupSizeOption,
+	LocationRadiusOption,
+	PriceOption,
+	TimeOfDayOption,
+	type EventIdea
+} from '$lib/types.js';
 import { fail, json, redirect } from '@sveltejs/kit';
 import { v6 as uuidv6 } from 'uuid';
 
@@ -8,32 +15,32 @@ function isIcon(char) {
 	return iconRanges.some(([start, end]) => codePoint >= start && codePoint <= end);
 }
 
-function validateField(fieldName, fieldValue) {
+function throwErrorIfMissing(fieldName, fieldValue) {
 	if (!fieldValue) {
 		return fail(400, { [fieldName]: fieldValue, missing: true });
 	}
 }
 
 /*
-// TODO: we could use the normal svelte formdata stuff
+// TODO: we could use the normal svelte formformData stuff
 export async function POST({ request, cookies }) {
 	const userid = cookies.get('userid');
 	console.log(userid);
 
-	const data: EventIdea = await request.json();
-	console.log(data);
+	const formData: EventIdea = await request.json();
+	console.log(formData);
 	const entry: EventIdeaTableEntry = {
-		date: data.date,
-		id: data.id,
-		title: data.title,
-		description: data.description,
-		icon: data.icon,
-		likes: data.likes,
-		townPrecomputed: data.townPrecomputed,
-		location: data.location.toString(),
-		visitorAmount: data.visitorAmount,
-		priceCents: data.priceCents,
-		creator: data.creator
+		date: formData.date,
+		id: formData.id,
+		title: formData.title,
+		description: formData.description,
+		icon: formData.icon,
+		likes: formData.likes,
+		townPrecomputed: formData.townPrecomputed,
+		location: formData.location.toString(),
+		visitorAmount: formData.visitorAmount,
+		priceCents: formData.priceCents,
+		creator: formData.creator
 	};
 	const newEventIdea = await db.insert(eventidea).values(entry);
 	// return { success: true, newEventIdea };
@@ -55,53 +62,118 @@ export async function POST({ cookies, request }) {
 	}
 
 	console.log(`Submitting idea via form and ${userID}`);
-	const data = await request.formData();
-	console.log(data);
+	const formData = await request.formData();
+	console.log(formData);
 
-	// Validate required fields
-	validateField('icon', data.get('icon'));
-	const icon = data.get('icon');
+	//// Validate required fields
+	//Validate if missing
+	let iconData = formData.get('icon');
+	throwErrorIfMissing('icon', iconData);
 
+	let titleData = formData.get('title');
+	throwErrorIfMissing('title', titleData);
+
+	let descriptionData = formData.get('description');
+	throwErrorIfMissing('description', descriptionData);
+
+	let minDateData = formData.get('minDate');
+	throwErrorIfMissing('minDate', minDateData);
+
+	let maxDateData = formData.get('maxDate');
+	throwErrorIfMissing('maxDate', maxDateData);
+
+	let townData = formData.get('town');
+	throwErrorIfMissing('town', townData);
+
+	let latitudeData = formData.get('latitude');
+	throwErrorIfMissing('latitude', latitudeData);
+
+	let longitudeData = formData.get('longitude');
+	throwErrorIfMissing('longitude', longitudeData);
+
+	// Derive enums from the form formData
+	let timeOfDayData = formData.get('timeOfDay'); // Assuming the user inputs this
+	throwErrorIfMissing('timeOfDay', timeOfDayData);
+
+	let groupSizeData = formData.get('groupSize'); // Assuming the user inputs this
+	throwErrorIfMissing('groupSize', groupSizeData);
+
+	let priceData = formData.get('price'); // Assuming the user inputs this
+	throwErrorIfMissing('price', priceData);
+
+	let locationRadiusData = formData.get('locationRadius'); // Assuming the user inputs this
+	throwErrorIfMissing('locationRadius', locationRadiusData);
+
+	console.log('All required form data was received and read .');
+
+	//Validate values
+	let icon: string = iconData?.toString();
 	if (!isIcon(icon)) {
-		return fail(400, { icon, invalid: true });
+		return fail(400, { iconData, invalid: true });
 	}
 
-	const title = data.get('title');
-	validateField('title', title);
-	const description = data.get('description');
-	validateField('description', description);
-	const minDate = data.get('minDate');
-	validateField('minDate', minDate);
-	const maxDate = data.get('maxDate');
-	validateField('maxDate', maxDate);
-	const town = data.get('town');
-	validateField('town', town);
-	const latitude = data.get('latitude');
-	validateField('latitude', latitude);
-	const longitude = data.get('longitude');
-	validateField('longitude', longitude);
+	let title: string = titleData?.toString();
+	if (title.length < 5 || title.length > 256) {
+		return fail(400, { titleData, invalid: true });
+	}
 
-	// Derive enums from the form data
-	const timeOfDay = data.get('timeOfDay'); // Assuming the user inputs this
-	validateField('timeOfDay', timeOfDay);
+	let description: string = descriptionData?.toString();
+	if (description.length == 0 || description.length > 1024) {
+		return fail(400, { descriptionData, invalid: true });
+	}
 
-	const groupSize = data.get('groupSize'); // Assuming the user inputs this
-	validateField('groupSize', groupSize);
+	let minDate: Date = new Date(minDateData);
+	if (!minDate) {
+		return fail(400, { minDateData, invalid: true });
+	}
 
-	const price = data.get('price'); // Assuming the user inputs this
-	validateField('price', price);
+	let maxDate: Date = new Date(maxDateData);
+	if (!maxDate || maxDate < minDate) {
+		return fail(400, { maxDateData, invalid: true });
+	}
 
-	const locationRadius = data.get('locationRadius'); // Assuming the user inputs this
-	validateField('locationRadius', locationRadius);
+	let town: string = townData?.toString();
+	if (town.length == 0 || town.length > 256) {
+		return fail(400, { townData, invalid: true });
+	}
 
-	console.log('All data read successfully.');
+	let latitude: number = Number(latitudeData);
+	if (latitude === undefined) {
+		return fail(400, { latitudeData, invalid: true });
+	}
+
+	let longitude: number = Number(longitudeData);
+	if (longitude === undefined) {
+		return fail(400, { longitudeData, invalid: true });
+	}
+
+	// ENUMS, derive it from the form Data
+	let timeOfDay: TimeOfDayOption = Number(timeOfDayData);
+	if (!timeOfDay === undefined) {
+		return fail(400, { timeOfDayData, invalid: true });
+	}
+
+	let groupSize: GroupSizeOption = Number(groupSizeData);
+	if (!groupSize === undefined) {
+		return fail(400, { groupSizeData, invalid: true });
+	}
+
+	let price: PriceOption = Number(priceData);
+	if (!price === undefined) {
+		return fail(400, { priceData, invalid: true });
+	}
+
+	let locationRadius: LocationRadiusOption = Number(locationRadiusData);
+	if (!locationRadius === undefined) {
+		return fail(400, { locationRadiusData, invalid: true });
+	}
 
 	let newEventIdea = {
 		id: uuidv6(),
 		creatorId: userID,
-		title: title?.toString(),
-		icon: icon?.toString(),
-		description: description?.toString(),
+		title: title,
+		icon: icon,
+		description: description,
 		timeOfDay: timeOfDay,
 		groupSize: groupSize,
 		price: price,
@@ -111,8 +183,8 @@ export async function POST({ cookies, request }) {
 		},
 		locationRadius: locationRadius,
 		locationCoordinates: [latitude, longitude],
-		locationName: 'Zwickau'
-	};
+		locationName: town
+	} as EventIdea;
 
 	// Push the new event idea to your storage
 	eventIdeas.push(newEventIdea);

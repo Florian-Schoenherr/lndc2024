@@ -95,17 +95,17 @@ export const load: PageServerLoad = async ({
 			idea2Likes = 0;
 		}
 
-		console.log(`idea1Likes: ${idea1Likes} idea2Likes: ${idea2Likes}`);
+		//console.log(`idea1Likes: ${idea1Likes} idea2Likes: ${idea2Likes}`);
 
 		if (idea1Likes === idea2Likes) {
-			console.log('sorted equals');
+			//console.log('sorted equals');
 			return 0;
 		}
 		if (idea1Likes < idea2Likes) {
-			console.log('sorted less');
+			//console.log('sorted less');
 			return 1;
 		}
-		console.log('sorted more');
+		//console.log('sorted more');
 		return -1;
 	});
 

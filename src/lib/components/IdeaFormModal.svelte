@@ -23,7 +23,8 @@
 	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
 
 	let iconSelection: string[] = [];
-	let monthSelection: Date[] = [];
+	let minMonthSelection: Date[] = [];
+	let maxMonthSelection: Date[] = $state([]);
 
 	function closeForm() {
 		isOpen = false;
@@ -59,28 +60,49 @@
 			}));
 	}
 
-	function fillIconSelection() {
+	function getIconSelectionOptions(): string[] {
+		let iconSelectionOptions: string[] = [];
 		iconRanges.forEach((range) => {
 			for (let codePoint = range[0]; codePoint <= range[1]; codePoint++) {
 				const icon = String.fromCodePoint(codePoint);
 				iconSelection.push(icon);
 			}
 		});
+		return iconSelectionOptions;
 		//console.log(iconSelection);
 	}
 
-	function fillMonthSelection() {
-		for (let index = 0; index < 12; index++) {
+	function getMonthOptions(minMonthIndex: number, maxMonthIndex: number): Date[] {
+		let monthOptions: Date[] = [];
+		if (minMonthIndex < 1) {
+			minMonthIndex = 1;
+		}
+		if (maxMonthIndex > 12) {
+			maxMonthIndex = 12;
+		}
+
+		for (let index = minMonthIndex - 1; index < maxMonthIndex; index++) {
 			const monthRepresentation = new Date();
 			monthRepresentation.setMonth(index);
-			monthSelection.push(monthRepresentation);
+			monthOptions.push(monthRepresentation);
+		}
+		return monthOptions;
+	}
+
+	function updateDateRangeInput(event: Event & { currentTarget: EventTarget & HTMLSelectElement }) {
+		let selectedMonth = new Date(event.currentTarget.value);
+		//console.log(selectedMonth);
+
+		if (selectedMonth) {
+			maxMonthSelection = getMonthOptions(selectedMonth.getMonth() + 1, 12);
 		}
 	}
 
 	//Called when component is initialized
 	onMount(() => {
-		fillIconSelection();
-		fillMonthSelection();
+		iconSelection = getIconSelectionOptions();
+		minMonthSelection = getMonthOptions(1, 12);
+		maxMonthSelection = getMonthOptions(1, 12);
 	});
 </script>
 
@@ -195,8 +217,9 @@
 							name="minDate"
 							required
 							class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+							oninput={updateDateRangeInput}
 						>
-							{#each monthSelection as monthOption}
+							{#each minMonthSelection as monthOption}
 								<option value={monthOption}
 									>{Intl.DateTimeFormat('default', {
 										month: 'long'
@@ -213,7 +236,7 @@
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 					>
-						{#each monthSelection as monthOption}
+						{#each maxMonthSelection as monthOption}
 							<option value={monthOption}
 								>{Intl.DateTimeFormat('default', {
 									month: 'long'
