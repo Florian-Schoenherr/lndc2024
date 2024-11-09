@@ -6,30 +6,25 @@ export async function GET() {
 }
 
 export async function POST({ cookies, request }) {
-	const data = await request.formData();
-	console.log(data);
-
-	//const userID = data.get('userID');
-	//if (!userID) {
-	//	return fail(400, { userID, missing: true });
-	//}
-	const ideaID = data.get('ideaID');
-	if (!ideaID) {
-		return error(400, 'ideaId was missing at form data');
-	}
-	const likedState = data.get('likedState');
-	if (!likedState) {
-		return error(400, 'likedState was missing at form Data');
-	}
-
 	let userID = cookies.get('clientID');
 
 	if (!userID) {
 		console.log(`userID ${userID} was not set..,`);
 		return error(400, { userID, missing: true });
 	}
-
 	console.log(`Submitting like action with userID ${userID}`);
+
+	const formData = await request.formData();
+	console.log(formData);
+
+	const ideaID = formData.get('ideaID');
+	if (!ideaID) {
+		return error(400, 'ideaId was missing at form data');
+	}
+	const likedState = formData.get('likedState');
+	if (!likedState) {
+		return error(400, 'likedState was missing at form Data');
+	}
 
 	if (!likeDictionary[ideaID]) {
 		likeDictionary[ideaID] = [];
@@ -37,7 +32,7 @@ export async function POST({ cookies, request }) {
 
 	let ideaLikes = likeDictionary[ideaID];
 
-	// Read form data
+	// Read form formData
 	if (likedState.toString() === 'true') {
 		//Add Likes
 		//console.log('Called add Like');

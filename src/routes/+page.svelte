@@ -9,21 +9,39 @@
 </script>
 
 <!-- {#if !mapModal} -->
-<h1 class="text-4xl font-bold p-2 text-center">Eventideen</h1>
-{#each eventIdeas as idea}
-	<Card
-		{idea}
-		link={false}
-		isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
-		likeAmount={data.eventIdeasLikeAmount[idea.id]}
-	/>
-{/each}
 
-<button
-	class="fixed bottom-0 z-1 w-full h-14 text-2xl bg-orange-400 text-white font-bold rounded"
-	on:click={() => (formModal = true)}
->
-	Idee einreichen
-</button>
+<div class="flex flex-col h-screen">
+	<header id="header f">
+		<h1 class="text-4xl font-bold p-2 text-center">Eventmaps Ideen</h1>
+		<div class="w-100 bg-orange-200 font-bold text-center">
+			TESTVERSION - NUR IN ZWICKAU VERFUEGBAR
+		</div>
+		<div class="flex flex-row w-full items-center justify-center gap-5">
+			<div>Impressum</div>
+			<div>Über uns</div>
+			<div>Datenschutz</div>
+		</div>
+	</header>
+
+	<main class="flex-grow overflow-y-auto">
+		{#each eventIdeas as idea}
+			<Card
+				{idea}
+				link={false}
+				isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
+				likeAmount={data.eventIdeasLikeAmount[idea.id]}
+			/>
+		{/each}
+	</main>
+
+	<footer id="footer" class="h-14 w-full flex items-center justify-center">
+		<button
+			class="w-full h-full text-2xl bg-orange-400 text-white font-bold"
+			on:click={() => (formModal = true)}
+		>
+			Idee einreichen
+		</button>
+	</footer>
+</div>
 
 <IdeaFormModal size="xs" bind:isOpen={formModal} />

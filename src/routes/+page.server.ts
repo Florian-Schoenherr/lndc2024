@@ -82,7 +82,7 @@ export const load: PageServerLoad = async ({
 
 	//Sort entries by likes
 	eventIdeas.sort((idea1: EventIdea, idea2: EventIdea) => {
-		console.log('Sorting');
+		//console.log('Sorting');
 
 		let idea1Likes: number = eventIdeaLikes[idea1.id];
 		let idea2Likes: number = eventIdeaLikes[idea2.id];
