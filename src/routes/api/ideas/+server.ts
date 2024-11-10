@@ -171,6 +171,7 @@ export async function POST({ cookies, request }) {
 	let newEventIdea = {
 		id: uuidv6(),
 		creatorId: userID,
+		creationDate: new Date(),
 		title: title,
 		icon: icon,
 		description: description,

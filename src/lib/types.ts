@@ -190,6 +190,7 @@ function createBoundaryTime(hour: number, minute: number): Date {
 export class EventIdea {
 	id: string;
 	creatorId: string;
+	creationDate: Date;
 
 	title: string;
 	icon: string;
@@ -206,6 +207,7 @@ export class EventIdea {
 	constructor(
 		id: string,
 		creatorId: string,
+		creationDate: Date,
 		title: string,
 		icon: string,
 		description: string,
@@ -218,9 +220,10 @@ export class EventIdea {
 		locationRadius: LocationRadiusOption
 	) {
 		this.id = id;
+		this.creatorId = creatorId;
+		this.creationDate = creationDate;
 		this.locationCoordinates = locationCoordinates;
 		this.locationName = locationName;
-		this.creatorId = creatorId;
 		this.title = title;
 		this.icon = icon;
 		this.description = description;

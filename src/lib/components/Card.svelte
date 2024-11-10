@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LikeButton from './LikeButton.svelte';
 	import { localizations, locationRadiusConstraint, type EventIdea } from '../types';
+	import { votingDuration } from '$lib/data/data';
 
 	export let idea: EventIdea;
 	export let link = false;
@@ -13,6 +14,27 @@
 		} else {
 			isLikedbyUser = true;
 		}
+	}
+
+	function differenceInDays(date1: Date, date2: Date): number {
+		const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+		const diffInTime = date2.getTime() - date1.getTime();
+		return Math.round(diffInTime / oneDay);
+	}
+
+	function calcRemainingVotingDays(ideaCreationDate: Date) {
+		console.log(ideaCreationDate);
+		let lastVotingDate: Date = new Date(ideaCreationDate);
+		lastVotingDate.setDate(lastVotingDate.getDate() + votingDuration);
+		console.log(lastVotingDate);
+
+		let reaminingDays = differenceInDays(new Date(), lastVotingDate);
+
+		if (reaminingDays < 0) {
+			reaminingDays = 0;
+		}
+
+		return reaminingDays;
 	}
 </script>
 
@@ -28,6 +50,10 @@
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{idea.title}
 		</h5>
+		<div class="text-gray-400">
+			{calcRemainingVotingDays(idea.creationDate)} day(s) left to vote
+		</div>
+
 		<div class="ml-auto">
 			<form method="POST" action="api/ideas/likes">
 				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />

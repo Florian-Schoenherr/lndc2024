@@ -11,10 +11,13 @@ export const likeDictionary: LikeDictionary = {
 	'2': ['user1']
 };
 
+export const votingDuration: number = 5; //votingDurationDays
+
 export const eventIdeas: EventIdea[] = [
 	{
 		id: '1',
 		creatorId: 'user1',
+		creationDate: new Date(),
 		title: 'Weihnachtsfeier',
 		icon: '🍸',
 		description: 'HoHoHo',
@@ -32,6 +35,7 @@ export const eventIdeas: EventIdea[] = [
 	{
 		id: '2',
 		creatorId: 'user2',
+		creationDate: new Date(2024, 9, 13, 0, 0, 0),
 		title: 'Haloween Kicker',
 		icon: '⚽',
 		description: 'Huuuuhhuuuu',
