@@ -113,12 +113,14 @@ export async function POST({ cookies, request }) {
 	}
 
 	let title: string = titleData?.toString();
-	if (title.length < 5 || title.length > 256) {
+	console.log(title);
+
+	if (title.length < 1 || title.length > 256) {
 		return fail(400, { titleData, invalid: true });
 	}
 
 	let description: string = descriptionData?.toString();
-	if (description.length == 0 || description.length > 1024) {
+	if (description.length < 1 || description.length > 1024) {
 		return fail(400, { descriptionData, invalid: true });
 	}
 
@@ -133,7 +135,7 @@ export async function POST({ cookies, request }) {
 	}
 
 	let town: string = townData?.toString();
-	if (town.length == 0 || town.length > 256) {
+	if (town.length < 1 || town.length > 256) {
 		return fail(400, { townData, invalid: true });
 	}
 
@@ -149,22 +151,22 @@ export async function POST({ cookies, request }) {
 
 	// ENUMS, derive it from the form Data
 	let timeOfDay: TimeOfDayOption = Number(timeOfDayData);
-	if (!timeOfDay === undefined) {
+	if (timeOfDay === undefined) {
 		return fail(400, { timeOfDayData, invalid: true });
 	}
 
 	let groupSize: GroupSizeOption = Number(groupSizeData);
-	if (!groupSize === undefined) {
+	if (groupSize === undefined) {
 		return fail(400, { groupSizeData, invalid: true });
 	}
 
 	let price: PriceOption = Number(priceData);
-	if (!price === undefined) {
+	if (price === undefined) {
 		return fail(400, { priceData, invalid: true });
 	}
 
 	let locationRadius: LocationRadiusOption = Number(locationRadiusData);
-	if (!locationRadius === undefined) {
+	if (locationRadius === undefined) {
 		return fail(400, { locationRadiusData, invalid: true });
 	}
 
