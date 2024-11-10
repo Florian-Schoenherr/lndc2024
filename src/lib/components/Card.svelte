@@ -23,10 +23,10 @@
 	}
 
 	function calcRemainingVotingDays(ideaCreationDate: Date) {
-		console.log(ideaCreationDate);
+		//console.log(ideaCreationDate);
 		let lastVotingDate: Date = new Date(ideaCreationDate);
 		lastVotingDate.setDate(lastVotingDate.getDate() + votingDuration);
-		console.log(lastVotingDate);
+		//console.log(lastVotingDate);
 
 		let reaminingDays = differenceInDays(new Date(), lastVotingDate);
 

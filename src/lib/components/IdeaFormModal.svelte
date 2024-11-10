@@ -65,11 +65,10 @@
 		iconRanges.forEach((range) => {
 			for (let codePoint = range[0]; codePoint <= range[1]; codePoint++) {
 				const icon = String.fromCodePoint(codePoint);
-				iconSelection.push(icon);
+				iconSelectionOptions.push(icon);
 			}
 		});
 		return iconSelectionOptions;
-		//console.log(iconSelection);
 	}
 
 	function getMonthOptions(minMonthIndex: number, maxMonthIndex: number): Date[] {

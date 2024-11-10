@@ -11,7 +11,7 @@ export const likeDictionary: LikeDictionary = {
 	'2': ['user1']
 };
 
-export const votingDuration: number = 5; //votingDurationDays
+export const votingDuration: number = 10; //votingDurationDays
 
 export const eventIdeas: EventIdea[] = [
 	{
