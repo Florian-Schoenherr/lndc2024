@@ -22,8 +22,8 @@
 	let isDropdownVisible = $state(false);
 	let location: null | { lngLat: LngLatLike; town: string } = $state(null);
 
-	let iconSelection: string[] = [];
-	let minMonthSelection: Date[] = [];
+	let iconSelection: string[] = $state([]);
+	let minMonthSelection: Date[] = $state([]);
 	let maxMonthSelection: Date[] = $state([]);
 
 	function closeForm() {
@@ -158,8 +158,10 @@
 				></textarea>
 			</div>
 
-			<div>
-				<label class="block text-sm font-medium text-gray-700">Wunsch-Zeitraum wählen</label>
+			<fieldset id="dateRange">
+				<label for="dateRange" class="block text-sm font-medium text-gray-700"
+					>Wunsch-Zeitraum wählen</label
+				>
 
 				<div class="space-y-2">
 					<label for="minDate" class="block text-sm font-medium text-gray-700">Von</label>
@@ -195,7 +197,7 @@
 						>
 					{/each}
 				</select>
-			</div>
+			</fieldset>
 
 			<!-- Price Category -->
 			<div class="space-y-2">
@@ -273,7 +275,9 @@
 			</div>
 
 			<div class="space-y-2">
-				<label class="block text-sm font-medium text-gray-700">Bevorzugte Tageszeit</label>
+				<label for="timeOfDay" class="block text-sm font-medium text-gray-700"
+					>Bevorzugte Tageszeit</label
+				>
 				<select
 					id="timeOfDay"
 					name="timeOfDay"

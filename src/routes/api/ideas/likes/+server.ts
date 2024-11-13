@@ -36,6 +36,11 @@ export async function POST({ cookies, request }) {
 	if (likedState.toString() === 'true') {
 		//Add Likes
 		//console.log('Called add Like');
+
+		if (likeDictionary[ideaID].includes(userID.toString())) {
+			return error(400, 'User liked this Idea already !');
+		}
+
 		ideaLikes.push(userID.toString());
 		likeDictionary[ideaID] = ideaLikes;
 		//console.log(likeDictionary);
@@ -47,6 +52,11 @@ export async function POST({ cookies, request }) {
 		//console.log('Called remove Like');
 		//console.log(likeDictionary);
 		//console.log(ideaLikes);
+
+		if (!likeDictionary[ideaID].includes(userID.toString())) {
+			return error(400, 'Users like couldn`t be found !');
+		}
+
 		const index = ideaLikes.indexOf(userID.toString(), 0);
 		if (index > -1) {
 			ideaLikes.splice(index, 1);

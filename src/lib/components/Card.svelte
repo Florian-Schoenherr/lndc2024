@@ -1,10 +1,11 @@
 <script lang="ts">
 	import LikeButton from './LikeButton.svelte';
-	import { localizations, locationRadiusConstraint, type EventIdea } from '../types';
+	import { localizations, type EventIdea } from '../types';
 	import { votingDuration } from '$lib/data/data';
+	import { goto } from '$app/navigation';
 
 	export let idea: EventIdea;
-	export let link = false;
+	export let link: string;
 	export let isLikedbyUser: boolean = false;
 	export let likeAmount: number = 0;
 	export let isEnabled: boolean = true;
@@ -37,59 +38,69 @@
 
 		return reaminingDays;
 	}
+
+	function navigateToDetails() {
+		if (link) {
+			console.log('link clicked');
+			goto(link);
+		}
+	}
 </script>
 
-<svelte:element
-	this={link ? 'div' : 'div'}
-	class={'block px-5 py-3 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ' +
-		(link ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : '')}
->
-	<div class="flex gap-2 items-center">
-		<div class="h-16 w-16 dark:stroke-white align-middle text-5xl">
-			{idea.icon}
+<div class="px-5 py-3 w-100 flex flex-row gap-2">
+	<div
+		class="flex-grow"
+		onclick={navigateToDetails}
+		onkeydown={navigateToDetails}
+		role="button"
+		tabindex="0"
+	>
+		<div class="flex gap-2 items-center">
+			<div class="h-16 w-16 dark:stroke-white align-middle text-5xl">
+				{idea.icon}
+			</div>
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+				{idea.title}
+			</h5>
 		</div>
-		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-			{idea.title}
-		</h5>
+
+		<div class="flex flex-row justify-between items-center text-xl dark:text-white">
+			<div class="text-xl">
+				🖈 {idea.locationName}
+			</div>
+			<div class="text-lg">
+				{Intl.DateTimeFormat('default', {
+					month: 'long'
+				}).format(idea.dateRange.minDate)}
+				-<br />
+				{Intl.DateTimeFormat('default', {
+					month: 'long'
+				}).format(idea.dateRange.maxDate)}
+			</div>
+			<div class="text-2xl">
+				{localizations.emoticon.timeOfDayConstraint[idea.timeOfDay]}
+			</div>
+			<div class="text-xl">
+				{localizations.emoticon.priceConstraint[idea.price]}
+			</div>
+		</div>
+	</div>
+
+	<div class="w-20 h-full">
+		{#if isEnabled}
+			<form method="POST" action="api/ideas/likes">
+				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
+				<input type="hidden" name="ideaID" value={idea.id} />
+				<input type="hidden" name="likedState" value={isLikedbyUser} />
+			</form>
+		{/if}
+		{#if !isEnabled}
+			<LikeButton click={() => {}} likes={likeAmount} {isLikedbyUser} />
+		{/if}
 		{#if isEnabled}
 			<div class="text-gray-400">
-				{calcRemainingVotingDays(idea.creationDate)} day(s) left to vote
+				Voting: {calcRemainingVotingDays(idea.creationDate)} Tag(e)
 			</div>
 		{/if}
-
-		<div class="ml-auto">
-			{#if isEnabled}
-				<form method="POST" action="api/ideas/likes">
-					<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
-					<input type="hidden" name="ideaID" value={idea.id} />
-					<input type="hidden" name="likedState" value={isLikedbyUser} />
-				</form>
-			{/if}
-			{#if !isEnabled}
-				<LikeButton click={() => {}} likes={likeAmount} {isLikedbyUser} />
-			{/if}
-		</div>
 	</div>
-
-	<div class="px-3 flex flex-row w-full justify-between items-center text-xl dark:text-white cent">
-		<div class="text-2xl">
-			🖈 {idea.locationName}
-		</div>
-		<div>
-			{Intl.DateTimeFormat('default', {
-				month: 'long'
-			}).format(idea.dateRange.minDate)}
-			-<br />
-			{Intl.DateTimeFormat('default', {
-				month: 'long'
-			}).format(idea.dateRange.maxDate)}
-		</div>
-		<div class="text-3xl">
-			{localizations.emoticon.timeOfDayConstraint[idea.timeOfDay]}
-		</div>
-		<div class="text-2xl">
-			{localizations.emoticon.priceConstraint[idea.price]}
-		</div>
-	</div>
-	<slot />
-</svelte:element>
+</div>

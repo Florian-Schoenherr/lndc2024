@@ -44,7 +44,7 @@
 			{#each eventIdeas as idea}
 				<Card
 					{idea}
-					link={false}
+					link={'/details/' + idea.id}
 					isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
 					likeAmount={data.eventIdeasLikeAmount[idea.id]}
 					isEnabled={true}

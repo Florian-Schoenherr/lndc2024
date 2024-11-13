@@ -1,8 +1,7 @@
 import type { EventIdea } from '$lib/types';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { eventIdeas } from '$lib/data';
-import { db } from '$lib/server/db';
+import { eventIdeas } from '$lib/data/data';
 
 export const load: PageServerLoad = async ({ url, params }) => {
 	// const eventIdea = await db.query.eventidea.findFirst({
