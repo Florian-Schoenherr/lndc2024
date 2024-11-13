@@ -13,6 +13,8 @@ export const likeDictionary: LikeDictionary = {
 
 export const votingDuration: number = 10; //votingDurationDays
 
+export const archivedEventIdeas: EventIdea[] = [];
+
 export const eventIdeas: EventIdea[] = [
 	{
 		id: '1',

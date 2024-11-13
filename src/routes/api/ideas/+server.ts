@@ -1,4 +1,4 @@
-import { eventIdeas, iconRanges } from '$lib/data/data';
+import { archivedEventIdeas, eventIdeas, iconRanges, votingDuration } from '$lib/data/data';
 import {
 	GroupSizeOption,
 	LocationRadiusOption,
@@ -8,6 +8,9 @@ import {
 } from '$lib/types.js';
 import { fail, json, redirect } from '@sveltejs/kit';
 import { v6 as uuidv6 } from 'uuid';
+
+// Set an interval to check all ideas every N seconds about the voting time.
+const MOVE_FINISHED_VOTING_INTERVAL = 60 * 60; // 1h
 
 function isIcon(char) {
 	const codePoint = char.codePointAt(0); //get codepoint of first char.
@@ -20,6 +23,50 @@ function throwErrorIfMissing(fieldName, fieldValue) {
 		return fail(400, { [fieldName]: fieldValue, missing: true });
 	}
 }
+
+function differenceInDays(date1: Date, date2: Date): number {
+	const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+	const diffInTime = date2.getTime() - date1.getTime();
+	return Math.round(diffInTime / oneDay);
+}
+
+function calcRemainingVotingDays(ideaCreationDate: Date) {
+	//console.log(ideaCreationDate);
+	let lastVotingDate: Date = new Date(ideaCreationDate);
+	lastVotingDate.setDate(lastVotingDate.getDate() + votingDuration);
+	//console.log(lastVotingDate);
+
+	let reaminingDays = differenceInDays(new Date(), lastVotingDate);
+
+	if (reaminingDays < 0) {
+		reaminingDays = 0;
+	}
+
+	return reaminingDays;
+}
+
+function sortIdeasToArchivedByVotingState() {
+	const now = Date.now();
+	//function to divide the ideas into active and archived ideas. Archived = voting time over
+	let expiredVoteIdeas = eventIdeas.filter((idea) => {
+		if (calcRemainingVotingDays(idea.creationDate) <= 0) {
+			archivedEventIdeas.push(idea); // Move to archived list
+			return true;
+		}
+		return false;
+	});
+
+	expiredVoteIdeas.forEach((ideaToRemove) => {
+		let index = eventIdeas.findIndex((idea) => idea.id === ideaToRemove.id);
+		if (index) {
+			eventIdeas.splice(index, 1);
+		}
+	});
+	console.log(`SERVER: Moved ${expiredVoteIdeas.length} ideas to archived...`);
+}
+
+sortIdeasToArchivedByVotingState();
+setInterval(sortIdeasToArchivedByVotingState, MOVE_FINISHED_VOTING_INTERVAL);
 
 /*
 // TODO: we could use the normal svelte formformData stuff

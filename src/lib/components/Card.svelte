@@ -7,6 +7,7 @@
 	export let link = false;
 	export let isLikedbyUser: boolean = false;
 	export let likeAmount: number = 0;
+	export let isEnabled: boolean = true;
 
 	function toggleLike(e: Event): void {
 		if (isLikedbyUser) {
@@ -50,16 +51,23 @@
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 			{idea.title}
 		</h5>
-		<div class="text-gray-400">
-			{calcRemainingVotingDays(idea.creationDate)} day(s) left to vote
-		</div>
+		{#if isEnabled}
+			<div class="text-gray-400">
+				{calcRemainingVotingDays(idea.creationDate)} day(s) left to vote
+			</div>
+		{/if}
 
 		<div class="ml-auto">
-			<form method="POST" action="api/ideas/likes">
-				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
-				<input type="hidden" name="ideaID" value={idea.id} />
-				<input type="hidden" name="likedState" value={isLikedbyUser} />
-			</form>
+			{#if isEnabled}
+				<form method="POST" action="api/ideas/likes">
+					<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
+					<input type="hidden" name="ideaID" value={idea.id} />
+					<input type="hidden" name="likedState" value={isLikedbyUser} />
+				</form>
+			{/if}
+			{#if !isEnabled}
+				<LikeButton click={() => {}} likes={likeAmount} {isLikedbyUser} />
+			{/if}
 		</div>
 	</div>
 

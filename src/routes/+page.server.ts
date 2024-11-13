@@ -10,6 +10,7 @@ export const load: PageServerLoad = async ({
 }): Promise<{
 	userId: string;
 	eventIdeas: EventIdea[];
+	archivedEventIdeas: EventIdea[];
 	eventIdeasUserLiked: string[];
 	eventIdeasLikeAmount: { [key: string]: number };
 }> => {
@@ -40,7 +41,7 @@ export const load: PageServerLoad = async ({
 		console.log(`Set Cookie "clientID":${userCookieId}.`);
 	}
 
-	////Fetch eventIdea date
+	////Fetch eventIdea data
 	const eventIdeaResponse = await fetch('/api/ideas');
 	let eventIdeas: EventIdea[] = await eventIdeaResponse.json();
 
@@ -55,6 +56,22 @@ export const load: PageServerLoad = async ({
 	}));
 
 	console.log('Fetched the following eventIdeas: ', eventIdeas);
+
+	////Fetch archived eventIdea data
+	const eventIdeaArchivedResponse = await fetch('/api/ideas/archived');
+	let archivedEventIdeas: EventIdea[] = await eventIdeaArchivedResponse.json();
+
+	//adapt the properties to the correct data type
+	//...idea does a shallow copy of each single idea object -> it add all properties. Some of them get adapted here.
+	archivedEventIdeas = archivedEventIdeas.map((idea) => ({
+		...idea,
+		dateRange: {
+			minDate: new Date(idea.dateRange.minDate),
+			maxDate: new Date(idea.dateRange.maxDate)
+		}
+	}));
+
+	console.log('Fetched the following archived eventIdeas: ', archivedEventIdeas);
 
 	//// Get the like data for each event
 
@@ -112,6 +129,7 @@ export const load: PageServerLoad = async ({
 	return {
 		userId: userCookieId,
 		eventIdeas: eventIdeas,
+		archivedEventIdeas: archivedEventIdeas,
 		eventIdeasLikeAmount: eventIdeaLikes,
 		eventIdeasUserLiked: currentUsersLikedIdeaIds
 	};
