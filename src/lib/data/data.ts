@@ -56,9 +56,9 @@ export const eventIdeas: EventIdea[] = [
 
 // Define the emoji ranges used in the form inpu
 export const iconRanges = [
-	[0x1f600, 0x1f64f], // Emoticons
+	//[0x1f600, 0x1f64f], // Emoticons
 	[0x1f300, 0x1f5ff], // Miscellaneous Symbols and Pictographs
 	[0x1f680, 0x1f6ff], // Transport and Map Symbols
-	[0x1f900, 0x1f9ff], // Supplemental Symbols and Pictographs
+	//[0x1f900, 0x1f9ff], // Supplemental Symbols and Pictographs
 	[0x1f1e6, 0x1f1ff] // Flags
 ];

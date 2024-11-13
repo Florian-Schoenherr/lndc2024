@@ -40,7 +40,7 @@
 		isDropdownVisible = !isDropdownVisible;
 	}
 
-	function updateIconInput(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+	function updateIconInput(event: MouseEvent & { currentTarget: EventTarget & HTMLOptionElement }) {
 		let iconInput = document.getElementById('icon');
 
 		if (iconInput) {
@@ -106,136 +106,71 @@
 </script>
 
 {#if isOpen}
-	<div
-		id="ideaModal"
-		tabindex="-1"
-		class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-10 justify-center items-center md:inset-0 h-[calc(100%-1rem)] p-4 w-full max-h-full bg-white rounded-lg shadow dark:bg-gray-700"
-	>
-		<div class="relative h-5/6">
-			<div
-				class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
-			>
-				<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Idee einreichen</h3>
-				<button
-					type="button"
-					class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-					onclick={closeForm}
+	<div id="modalContainer" class="flex flex-col h-full w-full fixed top-0 left-0 bg-white p-5">
+		<div id="titleBar" class="w-full mb-3 flex flex-row justify-between">
+			<h1 class="text-2xl font-bold text-gray-600">Idee einreichen</h1>
+
+			<button onclick={closeForm} class="text-l font-bold text-gray-500"> X </button>
+		</div>
+		<form
+			id="ideaForm"
+			action="/api/ideas"
+			method="POST"
+			class="w-full h-full flex-grow flex flex-col space-y-6 overflow-y-scroll overflow-x-hidden bg-white"
+		>
+			<div class="space-y-1">
+				<label for="icon" class="block text-sm font-medium text-gray-700">Ideen-Icon</label>
+				<select
+					name="icon"
+					id="icon"
+					class="mt-1 w-20 rounded-md border-gray-300 shadow-sm shadow-lg rounded mt-2 py-2 z-10 max-h-40 overflow-y-scroll"
+					required
 				>
-					<svg
-						class="w-3 h-3"
-						aria-hidden="true"
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 14 14"
-					>
-						<path
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-						/>
-					</svg>
-					<span class="sr-only">Close modal</span>
-				</button>
+					{#each iconSelection as emoticon}
+						<option class="block px-4 py-2 text-black hover:bg-gray-200">
+							{emoticon.toString()}
+						</option>
+					{/each}
+				</select>
 			</div>
 
-			<form
-				id="ideaForm"
-				action="/api/ideas"
-				method="POST"
-				class="flex h-5/6 flex-col space-y-6 overflow-y-scroll overflow-x-hidden"
-			>
-				<div class="space-y-1">
-					<label for="icon" class="block text-sm font-medium text-gray-700">Vorschaubild</label>
-					<input
-						type="text"
-						name="icon"
-						id="icon"
-						value="😎"
-						required
-						maxlength="1"
-						class="mt-1 w-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					/>
-					<div class="relative inline-block">
-						<button
-							onclick={toggleDropdownVisbility}
-							class="bg-orange-400 text-white py-2 px-4 rounded focus:outline-none focus:bg-orange-600"
-							>Auswahl</button
-						>
-						{#if isDropdownVisible}
-							<div
-								id="emoticonDropdown"
-								class="absolute bg-gray-100 shadow-lg rounded mt-2 py-2 w-100 z-10 max-h-40 overflow-y-scroll"
-							>
-								{#each iconSelection as emoticon}
-									<div
-										onclick={updateIconInput}
-										class="block px-4 py-2 text-black hover:bg-gray-200"
-									>
-										{emoticon.toString()}
-									</div>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				</div>
+			<div class="space-y-1">
+				<label for="title" class="block text-sm font-medium text-gray-700">Thema</label>
+				<input
+					type="text"
+					id="title"
+					name="title"
+					placeholder="Your Event"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				/>
+			</div>
 
-				<div class="space-y-1">
-					<label for="title" class="block text-sm font-medium text-gray-700">Thema</label>
-					<input
-						type="text"
-						id="title"
-						name="title"
-						placeholder="Your Event"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					/>
-				</div>
+			<div class="space-y-2">
+				<label for="description" class="block text-sm font-medium text-gray-700">Beschreibung</label
+				>
+				<textarea
+					id="description"
+					name="description"
+					placeholder="Lass uns etwas unternehmen !"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				></textarea>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-gray-700">Wunsch-Zeitraum wählen</label>
 
 				<div class="space-y-2">
-					<label for="description" class="block text-sm font-medium text-gray-700"
-						>Beschreibung</label
-					>
-					<textarea
-						id="description"
-						name="description"
-						placeholder="Lass uns etwas unternehmen !"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					></textarea>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700">Wunsch-Zeitraum wählen</label>
-
-					<div class="space-y-2">
-						<label for="minDate" class="block text-sm font-medium text-gray-700">Von</label>
-						<select
-							id="minDate"
-							name="minDate"
-							required
-							class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-							oninput={updateDateRangeInput}
-						>
-							{#each minMonthSelection as monthOption}
-								<option value={monthOption}
-									>{Intl.DateTimeFormat('default', {
-										month: 'long'
-									}).format(monthOption)}</option
-								>
-							{/each}
-						</select>
-					</div>
-
-					<label for="maxDate" class="block text-sm font-medium text-gray-700">Bis</label>
+					<label for="minDate" class="block text-sm font-medium text-gray-700">Von</label>
 					<select
-						id="maxDate"
-						name="maxDate"
+						id="minDate"
+						name="minDate"
 						required
 						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						oninput={updateDateRangeInput}
 					>
-						{#each maxMonthSelection as monthOption}
+						{#each minMonthSelection as monthOption}
 							<option value={monthOption}
 								>{Intl.DateTimeFormat('default', {
 									month: 'long'
@@ -245,113 +180,127 @@
 					</select>
 				</div>
 
-				<!-- Price Category -->
-				<div class="space-y-2">
-					<label for="price" class="block text-sm font-medium text-gray-700">Preis in €</label>
-					<select
-						id="price"
-						name="price"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					>
-						{#each enumToArray(PriceOption) as { value, label }}
-							<option {value}
-								>{localizations.de.priceConstraint[value]} ({priceConstraint[value].min} € - {priceConstraint[
-									value
-								].max} €)</option
-							>
-						{/each}
-					</select>
-				</div>
+				<label for="maxDate" class="block text-sm font-medium text-gray-700">Bis</label>
+				<select
+					id="maxDate"
+					name="maxDate"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				>
+					{#each maxMonthSelection as monthOption}
+						<option value={monthOption}
+							>{Intl.DateTimeFormat('default', {
+								month: 'long'
+							}).format(monthOption)}</option
+						>
+					{/each}
+				</select>
+			</div>
 
-				<div class="space-y-2">
-					<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
-					<input
-						type="text"
-						id="town"
-						name="town"
-						readonly
-						required
-						value={location?.town}
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-						onclick={openMap}
-					/>
-					<input type="hidden" name="latitude" value={location?.lngLat.lat} />
-					<input type="hidden" name="longitude" value={location?.lngLat.lng} />
-				</div>
+			<!-- Price Category -->
+			<div class="space-y-2">
+				<label for="price" class="block text-sm font-medium text-gray-700">Preis in €</label>
+				<select
+					id="price"
+					name="price"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				>
+					{#each enumToArray(PriceOption) as { value, label }}
+						<option {value}
+							>{localizations.de.priceConstraint[value]} ({priceConstraint[value].min} € - {priceConstraint[
+								value
+							].max} €)</option
+						>
+					{/each}
+				</select>
+			</div>
 
-				<div class="space-y-2">
-					<label for="visitorAmount" class="block text-sm font-medium text-gray-700"
-						>Besucherzahl</label
-					>
-					<select
-						id="groupSize"
-						name="groupSize"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					>
-						{#each enumToArray(GroupSizeOption) as { value, label }}
-							<option {value}
-								>{localizations.de.groupSizeConstraint[value]} ({groupSizeConstraint[value].min} - {groupSizeConstraint[
-									value
-								].max})</option
-							>
-						{/each}
-					</select>
-				</div>
+			<div class="space-y-2">
+				<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
+				<input
+					type="text"
+					id="town"
+					name="town"
+					readonly
+					required
+					value={location?.town}
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					onclick={openMap}
+				/>
+				<input type="hidden" name="latitude" value={location?.lngLat.lat} />
+				<input type="hidden" name="longitude" value={location?.lngLat.lng} />
+			</div>
 
-				<div class="space-y-2">
-					<label for="locationRadius" class="block text-sm font-medium text-gray-700"
-						>Radius wählen</label
-					>
-					<select
-						id="locationRadius"
-						name="locationRadius"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					>
-						{#each enumToArray(LocationRadiusOption) as { value, label }}
-							<option {value}
-								>{localizations.de.locationRadiusConstraint[value]} (bis {locationRadiusConstraint[
-									value
-								].max} m )</option
-							>
-						{/each}
-					</select>
-				</div>
+			<div class="space-y-2">
+				<label for="visitorAmount" class="block text-sm font-medium text-gray-700"
+					>Besucherzahl</label
+				>
+				<select
+					id="groupSize"
+					name="groupSize"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				>
+					{#each enumToArray(GroupSizeOption) as { value, label }}
+						<option {value}
+							>{localizations.de.groupSizeConstraint[value]} ({groupSizeConstraint[value].min} - {groupSizeConstraint[
+								value
+							].max})</option
+						>
+					{/each}
+				</select>
+			</div>
 
-				<div class="space-y-2">
-					<label class="block text-sm font-medium text-gray-700">Bevorzugte Tageszeit</label>
-					<select
-						id="timeOfDay"
-						name="timeOfDay"
-						required
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					>
-						{#each enumToArray(TimeOfDayOption) as { value, label }}
-							<option {value}
-								>{localizations.de.timeOfDayConstraint[value]} ({timeOfDayConstraint[
-									value
-								].min.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })} - {timeOfDayConstraint[
-									value
-								].max.toLocaleTimeString('default', {
-									hour: '2-digit',
-									minute: '2-digit'
-								})})</option
-							>
-						{/each}
-					</select>
-				</div>
+			<div class="space-y-2">
+				<label for="locationRadius" class="block text-sm font-medium text-gray-700"
+					>Radius wählen</label
+				>
+				<select
+					id="locationRadius"
+					name="locationRadius"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				>
+					{#each enumToArray(LocationRadiusOption) as { value, label }}
+						<option {value}
+							>{localizations.de.locationRadiusConstraint[value]} (bis {locationRadiusConstraint[
+								value
+							].max} m )</option
+						>
+					{/each}
+				</select>
+			</div>
 
-				<div class="mt-4">
-					<button
-						type="submit"
-						class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						>Einreichen</button
-					>
-				</div>
-			</form>
-		</div>
+			<div class="space-y-2">
+				<label class="block text-sm font-medium text-gray-700">Bevorzugte Tageszeit</label>
+				<select
+					id="timeOfDay"
+					name="timeOfDay"
+					required
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+				>
+					{#each enumToArray(TimeOfDayOption) as { value, label }}
+						<option {value}
+							>{localizations.de.timeOfDayConstraint[value]} ({timeOfDayConstraint[
+								value
+							].min.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })} - {timeOfDayConstraint[
+								value
+							].max.toLocaleTimeString('default', {
+								hour: '2-digit',
+								minute: '2-digit'
+							})})</option
+						>
+					{/each}
+				</select>
+			</div>
+		</form>
+		<input
+			form="ideaForm"
+			type="submit"
+			class="w-full py-2 px-4 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+			value="Einreichen"
+		/>
 	</div>
 {/if}
 
