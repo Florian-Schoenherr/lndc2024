@@ -32,7 +32,7 @@ export const eventIdeas: EventIdea[] = [
 			maxDate: new Date(2024, 12, 12, 0, 0, 0)
 		},
 		locationRadius: LocationRadiusOption.Small,
-		locationCoordinates: [-122.420679, 37.772537],
+		locationCoordinates: [12.497228914164765, 50.71251428991718],
 		locationName: 'Zwickau'
 	},
 	{
@@ -50,7 +50,7 @@ export const eventIdeas: EventIdea[] = [
 			maxDate: new Date(2024, 12, 14, 0, 0, 0)
 		},
 		locationRadius: LocationRadiusOption.Small,
-		locationCoordinates: [-122.420679, 137.772537],
+		locationCoordinates: [12.497228914164765, 50.71251428991718],
 		locationName: 'Zwickau'
 	}
 ];

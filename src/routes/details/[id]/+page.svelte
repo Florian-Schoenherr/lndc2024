@@ -17,7 +17,7 @@
 
 	let map: any = $state(null);
 	let mapContainer: any = $state(null);
-	let mapZoomLevel: number = $state(9);
+	let mapZoomLevel: number = $state(13);
 
 	// Function to create a GeoJSON circle
 	function createGeoJSONCircle(
@@ -26,8 +26,8 @@
 		radiusInMeters: number,
 		points = 64
 	) {
-		console.log(centerLatitude);
-		console.log(centerLatitude);
+		//console.log(centerLatitude);
+		//console.log(centerLatitude);
 
 		const coords = [];
 		// Earth's radius in meters
@@ -190,7 +190,7 @@
 						eventIdea.locationCoordinates[1],
 						locationRadiusConstraint[eventIdea.locationRadius].max
 					);
-					console.log(circleGeoJSON);
+					//console.log(circleGeoJSON);
 					map.addSource('circle', {
 						type: 'geojson',
 						data: circleGeoJSON

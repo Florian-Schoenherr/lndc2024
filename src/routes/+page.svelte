@@ -111,7 +111,7 @@
 			{#each archivedEventIdeas as idea}
 				<Card
 					{idea}
-					link={false}
+					link={'/details/' + idea.id}
 					isLikedbyUser={userLikes.includes(data.userId)}
 					likeAmount={likesAmountDictionary[idea.id]}
 					isEnabled={false}

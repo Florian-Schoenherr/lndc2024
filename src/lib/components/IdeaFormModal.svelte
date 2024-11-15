@@ -26,7 +26,7 @@
 	let minMonthSelection: Date[] = $state([]);
 	let maxMonthSelection: Date[] = $state([]);
 
-	let radiusConstraintSelection: number | null = $state();
+	let radiusConstraintSelection: number = $state(0);
 
 	function closeForm() {
 		isOpen = false;
@@ -268,23 +268,21 @@
 				</select>
 			</div>
 
-			{#if radiusConstraintSelection}
-				<div class="space-y-2">
-					<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
-					<input
-						type="text"
-						id="town"
-						name="town"
-						readonly
-						required
-						value={location?.town}
-						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-						onclick={openMap}
-					/>
-					<input type="hidden" name="latitude" value={location?.lngLat.lat} />
-					<input type="hidden" name="longitude" value={location?.lngLat.lng} />
-				</div>
-			{/if}
+			<div class="space-y-2">
+				<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
+				<input
+					type="text"
+					id="town"
+					name="town"
+					readonly
+					required
+					value={location?.town}
+					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+					onclick={openMap}
+				/>
+				<input type="hidden" name="latitude" value={location?.lngLat.lat} />
+				<input type="hidden" name="longitude" value={location?.lngLat.lng} />
+			</div>
 
 			<div class="space-y-2">
 				<label for="visitorAmount" class="block text-sm font-medium text-gray-700"
