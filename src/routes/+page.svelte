@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/components/Card.svelte';
 	import IdeaFormModal from '$lib/components/IdeaFormModal.svelte';
+	import type { EventIdea } from '$lib/types.js';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -18,15 +19,52 @@
 
 	onMount(() => {
 		// Connect to SSE
-		const eventSource = new EventSource(`/api/ideas/likes/updates?clientId=${data.userId}`);
-		eventSource.onmessage = (event) => {
+		const likeEventSource = new EventSource(`/api/ideas/likes/updates?clientId=${data.userId}`);
+		likeEventSource.onmessage = (event) => {
 			const data = JSON.parse(event.data);
-			console.log('SSE Data:', data);
+			//console.log('Like SSE Data:', data);
 			likesAmountDictionary = data;
 		};
+
+		const ideaEventSource = new EventSource(`/api/ideas/updates?clientId=${data.userId}`);
+		ideaEventSource.onmessage = (event) => {
+			let data: EventIdea[] = JSON.parse(event.data);
+			//console.log('Ideas SSE Data:', data);
+			data = data.map((idea) => ({
+				...idea,
+				dateRange: {
+					minDate: new Date(idea.dateRange.minDate),
+					maxDate: new Date(idea.dateRange.maxDate)
+				}
+			}));
+			//console.log('Ideas SSE Data:', data);
+
+			eventIdeas = data;
+		};
+
+		const archivedIdeasEventSource = new EventSource(
+			`/api/ideas/archived/updates?clientId=${data.userId}`
+		);
+
+		archivedIdeasEventSource.onmessage = (event) => {
+			let data: EventIdea[] = JSON.parse(event.data);
+			//console.log('Archived Ideas SSE Data:', data);
+			data = data.map((idea) => ({
+				...idea,
+				dateRange: {
+					minDate: new Date(idea.dateRange.minDate),
+					maxDate: new Date(idea.dateRange.maxDate)
+				}
+			}));
+			//console.log('Archived Ideas SSE Data:', data);
+			archivedEventIdeas = data;
+		};
+
 		// Cleanup on destroy
 		return () => {
-			eventSource.close();
+			likeEventSource.close();
+			ideaEventSource.close();
+			archivedIdeasEventSource.close();
 		};
 	});
 </script>

@@ -1,26 +1,20 @@
-import { likeDictionary } from '$lib/data/data.js';
+import { eventIdeas } from '$lib/data/data.js';
 import { error } from '@sveltejs/kit';
 
 function broadcastUpdate() {
 	for (const connectionEntry in activeConnections) {
 		const currentConnectionController = activeConnections[connectionEntry];
 
-		//// Caclulate the like amount of each event
-		const eventIdeaLikes = {};
-		for (const eventIdeaId in likeDictionary) {
-			eventIdeaLikes[eventIdeaId] = likeDictionary[eventIdeaId].amount;
-		}
-
-		const data = JSON.stringify(eventIdeaLikes);
+		const data = JSON.stringify(eventIdeas);
 		//console.log('SERVER: Broadcasting to:.', connectionEntry, data);
 		currentConnectionController.enqueue(new TextEncoder().encode(`data: ${data}\n\n`));
 	}
 }
 
-// Watch for changes in `likeDictionary` (you could use a timer or similar logic for polling)
+// Watch for changes in `eventIdeas` (you could use a timer or similar logic for polling)
 setInterval(() => {
-	// You would need to replace this with real change-detection logic for likeDictionary
-	//console.log('SERVER: idea likes', likeDictionary);
+	// You would need to replace this with real change-detection logic for eventIdeas
+	//console.log('SERVER: idea likes', eventIdeas);
 	broadcastUpdate();
 	//console.log('SERVER: broadcasted idea likes.');
 }, 1000); // Example interval of 5 seconds for polling
@@ -44,7 +38,7 @@ export async function GET({ params, url }) {
 				activeConnections[clientID] = controller;
 
 				// Send first message on conneciton build up
-				const firstMessage = JSON.stringify(likeDictionary);
+				const firstMessage = JSON.stringify(eventIdeas);
 				controller.enqueue(new TextEncoder().encode(`data: ${firstMessage}\n\n`));
 
 				// Clean up when client disconnects
@@ -61,7 +55,7 @@ export async function GET({ params, url }) {
 				const clientID = url.searchParams.get('clientId');
 				if (clientID) {
 					delete activeConnections[clientID];
-					console.log(`SERVER: ${clientID} closed connection to like updates.`);
+					console.log(`SERVER: ${clientID} closed connection to idea updates.`);
 				}
 			}
 		}),
