@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { MapMouseEvent } from 'maplibre-gl';
-	import { DefaultMarker, MapLibre } from 'svelte-maplibre';
+	import { DefaultMarker, MapLibre, type MarkerClickInfo } from 'svelte-maplibre';
 	import { type LngLatLike } from 'svelte-maplibre';
 
 	// ach man
-	let { saveLocation }: { saveLocation: (arg0: LngLatLike) => void } = $props();
+	const { saveLocation, maxRadius } = $props<{
+		saveLocation: (arg0: LngLatLike) => void;
+		maxRadius: number;
+	}>();
 
 	let map: any = $state(null);
 	let mapContainer: any = $state(null);
@@ -22,10 +25,85 @@
 	let mapCameraPosition: LngLatLike = $state([12.5266515, 50.7209498]);
 	let mapZoomLevel: number = $state(9);
 
-	let marker: null | { lngLat: LngLatLike } = $state(null);
+	let markerPosition: null | { lngLat: LngLatLike } = $state(null);
+
 	async function addMarker(e: CustomEvent<MapMouseEvent>) {
-		marker = { lngLat: e.detail.lngLat };
-		console.log(marker);
+		markerPosition = { lngLat: e.detail.lngLat };
+		console.log(markerPosition);
+	}
+
+	// Function to create a GeoJSON circle
+	function createGeoJSONCircle(
+		centerLongitude: number,
+		centerLatitude: number,
+		radiusInMeters: number,
+		points = 64
+	) {
+		//console.log(centerLatitude);
+		//console.log(centerLatitude);
+		//console.log(radiusInMeters);
+
+		const coords = [];
+		// Earth's radius in meters
+		const earthRadius = 6378137;
+
+		// Convert radius to degrees
+		const angularDistance = radiusInMeters / earthRadius;
+
+		for (let i = 0; i < points; i++) {
+			const theta = (i / points) * (2 * Math.PI);
+
+			// Calculate point coordinates
+			const latitude = centerLatitude + angularDistance * Math.sin(theta) * (180 / Math.PI);
+			const longitude =
+				centerLongitude +
+				(angularDistance * Math.cos(theta) * (180 / Math.PI)) /
+					Math.cos((centerLatitude * Math.PI) / 180);
+
+			coords.push([longitude, latitude]);
+		}
+		coords.push(coords[0]); // Close the circle
+
+		return {
+			type: 'Feature',
+			geometry: {
+				type: 'Polygon',
+				coordinates: [coords]
+			}
+		};
+	}
+
+	function updateCircle(e: CustomEvent<MarkerClickInfo>): void {
+		//console.log(markerPosition.lngLat);
+		const circleGeoJSON = createGeoJSONCircle(
+			markerPosition.lngLat.lng,
+			markerPosition.lngLat.lat,
+			maxRadius
+		);
+		//console.log(circleGeoJSON);
+
+		if (map.getSource('circle')) {
+			const updatedGeoJSON = createGeoJSONCircle(
+				markerPosition.lngLat.lng,
+				markerPosition.lngLat.lat,
+				maxRadius
+			);
+			map.getSource('circle').setData(updatedGeoJSON);
+		} else {
+			map.addSource('circle', {
+				type: 'geojson',
+				data: circleGeoJSON
+			});
+			map.addLayer({
+				id: 'circle-layer',
+				type: 'fill',
+				source: 'circle',
+				paint: {
+					'fill-color': '#007cbf',
+					'fill-opacity': 0.3
+				}
+			});
+		}
 	}
 </script>
 
@@ -38,21 +116,19 @@
 	bind:center={mapCameraPosition}
 	on:click={addMarker}
 	on:load={(event) => {
-		console.log('load', mapContainer);
 		map.resize();
-		console.log('was', map);
-		// map.reload();
+		console.log('Map loaded.');
 	}}
 >
-	{#if marker}
-		<DefaultMarker bind:lngLat={marker.lngLat} draggable />
+	{#if markerPosition}
+		<DefaultMarker bind:lngLat={markerPosition.lngLat} draggable on:drag={updateCircle} />
 	{/if}
 </MapLibre>
 
-{#if marker}
+{#if markerPosition}
 	<button
 		class="fixed bottom-10 z-1 w-full h-14 text-2xl bg-orange-400 text-white font-bold rounded"
-		on:click={() => saveLocation(marker!.lngLat)}
+		on:click={() => saveLocation(markerPosition!.lngLat)}
 	>
 		Location festlegen
 	</button>

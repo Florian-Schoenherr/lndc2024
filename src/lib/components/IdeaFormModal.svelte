@@ -26,6 +26,8 @@
 	let minMonthSelection: Date[] = $state([]);
 	let maxMonthSelection: Date[] = $state([]);
 
+	let radiusConstraintSelection: number | null = $state();
+
 	function closeForm() {
 		isOpen = false;
 	}
@@ -118,6 +120,12 @@
 		} catch (error) {
 			console.error('Error submitting idea form', error);
 		}
+	}
+
+	function saveRadiusSelection(
+		event: MouseEvent & { currentTarget: EventTarget & HTMLOptionElement }
+	) {
+		radiusConstraintSelection = Number(event.currentTarget.value);
 	}
 
 	//Called when component is initialized
@@ -241,20 +249,42 @@
 			</div>
 
 			<div class="space-y-2">
-				<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
-				<input
-					type="text"
-					id="town"
-					name="town"
-					readonly
+				<label for="locationRadius" class="block text-sm font-medium text-gray-700"
+					>Radius wählen</label
+				>
+				<select
+					id="locationRadius"
+					name="locationRadius"
 					required
-					value={location?.town}
 					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-					onclick={openMap}
-				/>
-				<input type="hidden" name="latitude" value={location?.lngLat.lat} />
-				<input type="hidden" name="longitude" value={location?.lngLat.lng} />
+				>
+					{#each enumToArray(LocationRadiusOption) as { value, label }}
+						<option {value} onclick={saveRadiusSelection}
+							>{localizations.de.locationRadiusConstraint[value]} (bis {locationRadiusConstraint[
+								value
+							].max} m )</option
+						>
+					{/each}
+				</select>
 			</div>
+
+			{#if radiusConstraintSelection}
+				<div class="space-y-2">
+					<label for="town" class="block text-sm font-medium text-gray-700">Ort</label>
+					<input
+						type="text"
+						id="town"
+						name="town"
+						readonly
+						required
+						value={location?.town}
+						class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+						onclick={openMap}
+					/>
+					<input type="hidden" name="latitude" value={location?.lngLat.lat} />
+					<input type="hidden" name="longitude" value={location?.lngLat.lng} />
+				</div>
+			{/if}
 
 			<div class="space-y-2">
 				<label for="visitorAmount" class="block text-sm font-medium text-gray-700"
@@ -271,26 +301,6 @@
 							>{localizations.de.groupSizeConstraint[value]} ({groupSizeConstraint[value].min} - {groupSizeConstraint[
 								value
 							].max})</option
-						>
-					{/each}
-				</select>
-			</div>
-
-			<div class="space-y-2">
-				<label for="locationRadius" class="block text-sm font-medium text-gray-700"
-					>Radius wählen</label
-				>
-				<select
-					id="locationRadius"
-					name="locationRadius"
-					required
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-				>
-					{#each enumToArray(LocationRadiusOption) as { value, label }}
-						<option {value}
-							>{localizations.de.locationRadiusConstraint[value]} (bis {locationRadiusConstraint[
-								value
-							].max} m )</option
 						>
 					{/each}
 				</select>
@@ -351,6 +361,7 @@
 					alert(`Stadt zu Koordinaten ${lngLat} nicht gefunden. \n Bitte erneut auswählen.`);
 				}
 			}}
+			maxRadius={locationRadiusConstraint[radiusConstraintSelection].max}
 		/>
 	</div>
 {/if}

@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { votingDuration } from '$lib/data/data';
 	import {
+		EventIdea,
 		groupSizeConstraint,
 		localizations,
 		locationRadiusConstraint,
@@ -12,11 +13,51 @@
 	import { DefaultMarker, MapLibre, type LngLatLike } from 'svelte-maplibre';
 
 	let { data } = $props();
-	let eventIdea = $state(data.eventIdea);
+	let eventIdea: EventIdea = $state(data.eventIdea);
 
 	let map: any = $state(null);
 	let mapContainer: any = $state(null);
 	let mapZoomLevel: number = $state(9);
+
+	// Function to create a GeoJSON circle
+	function createGeoJSONCircle(
+		centerLongitude: number,
+		centerLatitude: number,
+		radiusInMeters: number,
+		points = 64
+	) {
+		console.log(centerLatitude);
+		console.log(centerLatitude);
+
+		const coords = [];
+		// Earth's radius in meters
+		const earthRadius = 6378137;
+
+		// Convert radius to degrees
+		const angularDistance = radiusInMeters / earthRadius;
+
+		for (let i = 0; i < points; i++) {
+			const theta = (i / points) * (2 * Math.PI);
+
+			// Calculate point coordinates
+			const latitude = centerLatitude + angularDistance * Math.sin(theta) * (180 / Math.PI);
+			const longitude =
+				centerLongitude +
+				(angularDistance * Math.cos(theta) * (180 / Math.PI)) /
+					Math.cos((centerLatitude * Math.PI) / 180);
+
+			coords.push([longitude, latitude]);
+		}
+		coords.push(coords[0]); // Close the circle
+
+		return {
+			type: 'Feature',
+			geometry: {
+				type: 'Polygon',
+				coordinates: [coords]
+			}
+		};
+	}
 
 	function navigateHome(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
 		goto('/');
@@ -142,9 +183,31 @@
 				bind:mapContainer
 				bind:map
 				bind:zoom={mapZoomLevel}
-				bind:center={eventIdea.locationCoordinates}
+				center={eventIdea.locationCoordinates}
+				on:load={() => {
+					const circleGeoJSON = createGeoJSONCircle(
+						eventIdea.locationCoordinates[0],
+						eventIdea.locationCoordinates[1],
+						locationRadiusConstraint[eventIdea.locationRadius].max
+					);
+					console.log(circleGeoJSON);
+					map.addSource('circle', {
+						type: 'geojson',
+						data: circleGeoJSON
+					});
+					map.addLayer({
+						id: 'circle-layer',
+						type: 'fill',
+						source: 'circle',
+						paint: {
+							'fill-color': '#007cbf',
+							'fill-opacity': 0.3
+						}
+					});
+					console.log('Map loaded.');
+				}}
 			>
-				<DefaultMarker bind:lngLat={eventIdea.locationCoordinates} />
+				<DefaultMarker lngLat={eventIdea.locationCoordinates} />
 			</MapLibre>
 			<p class="text-center text-gray-600">{eventIdea.locationName}</p>
 			<p class="text-center text-sm text-gray-500">
