@@ -3,12 +3,13 @@ import {
 	LocationRadiusOption,
 	PriceOption,
 	TimeOfDayOption,
-	type EventIdea
+	type EventIdea,
+	type LikeDictionary
 } from '$lib/types';
 
 export const likeDictionary: LikeDictionary = {
-	'1': ['user1', 'user2'],
-	'2': ['user1']
+	'1': { list: ['user1', 'user2'], amount: 2 },
+	'2': { list: ['user1'], amount: 1 }
 };
 
 export const votingDuration: number = 10; //votingDurationDays

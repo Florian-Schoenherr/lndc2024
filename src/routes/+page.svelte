@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/components/Card.svelte';
 	import IdeaFormModal from '$lib/components/IdeaFormModal.svelte';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
@@ -8,10 +9,26 @@
 	let archivedEventIdeas = $state(data.archivedEventIdeas);
 	let formModal = $state(false);
 	let displayArchiv = $state(false);
+	let likesAmountDictionary: { [key: string]: number } = $state(data.eventIdeasLikeAmount); //register change handler it will stay dynamic also on event updates.
+	let userLikes: string[] = data.eventIdeasUserLiked;
 
 	function toggleArchivView() {
 		displayArchiv = !displayArchiv;
 	}
+
+	onMount(() => {
+		// Connect to SSE
+		const eventSource = new EventSource(`/api/ideas/likes/updates?clientId=${data.userId}`);
+		eventSource.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			console.log('SSE Data:', data);
+			likesAmountDictionary = data;
+		};
+		// Cleanup on destroy
+		return () => {
+			eventSource.close();
+		};
+	});
 </script>
 
 <!-- {#if !mapModal} -->
@@ -45,8 +62,8 @@
 				<Card
 					{idea}
 					link={'/details/' + idea.id}
-					isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
-					likeAmount={data.eventIdeasLikeAmount[idea.id]}
+					isLikedbyUser={userLikes.includes(data.userId)}
+					likeAmount={likesAmountDictionary[idea.id]}
 					isEnabled={true}
 				/>
 			{/each}
@@ -57,8 +74,8 @@
 				<Card
 					{idea}
 					link={false}
-					isLikedbyUser={data.eventIdeasUserLiked.includes(idea.id)}
-					likeAmount={data.eventIdeasLikeAmount[idea.id]}
+					isLikedbyUser={userLikes.includes(data.userId)}
+					likeAmount={likesAmountDictionary[idea.id]}
 					isEnabled={false}
 				/>
 			{/each}

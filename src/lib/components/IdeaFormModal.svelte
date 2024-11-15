@@ -14,9 +14,9 @@
 	} from '$lib/types';
 
 	import type { LngLatLike } from 'maplibre-gl';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 
-	let { size, isOpen = $bindable() } = $props();
+	let { isOpen = $bindable() } = $props();
 
 	let mapModal = $state(false);
 	let isDropdownVisible = $state(false);
@@ -97,6 +97,29 @@
 		}
 	}
 
+	// Handle form submission
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault(); // Prevent page reload
+		const formData = new FormData(event.target as HTMLFormElement);
+		try {
+			const response = await fetch('/api/ideas', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				// Update the UI based on the response
+				console.log('Idea form submitted successfully', data);
+				closeForm();
+			} else {
+				console.error('Failed to submit idea form', await response.text());
+			}
+		} catch (error) {
+			console.error('Error submitting idea form', error);
+		}
+	}
+
 	//Called when component is initialized
 	onMount(() => {
 		iconSelection = getIconSelectionOptions();
@@ -114,8 +137,7 @@
 		</div>
 		<form
 			id="ideaForm"
-			action="/api/ideas"
-			method="POST"
+			onsubmit={handleSubmit}
 			class="w-full h-full flex-grow flex flex-col space-y-6 overflow-y-scroll overflow-x-hidden bg-white"
 		>
 			<div class="space-y-1">

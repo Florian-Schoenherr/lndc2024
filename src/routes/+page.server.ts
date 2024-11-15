@@ -73,29 +73,13 @@ export const load: PageServerLoad = async ({
 
 	console.log('Fetched the following archived eventIdeas: ', archivedEventIdeas);
 
-	//// Get the like data for each event
+	//// Get the like amount of each event
+	const eventIdeaLikesResponse = await fetch('/api/ideas/likes');
+	const eventIdeaLikes: { [key: string]: number } = await eventIdeaLikesResponse.json();
 
-	const likeDataResponse = await fetch('/api/ideas/likes');
-	let likeDictionary: LikeDictionary = await likeDataResponse.json();
-
-	//// Caclulate the like amount of each event
-	let eventIdeaLikes = {};
-	for (const eventIdeaId in likeDictionary) {
-		eventIdeaLikes[eventIdeaId] = likeDictionary[eventIdeaId].length;
-	}
-
-	//// Caclulate a list of eventIdeas the current user likes
-	let currentUsersLikedIdeaIds = [];
-
-	for (const eventIdeaId in likeDictionary) {
-		if (likeDictionary[eventIdeaId].includes(userCookieId.toString())) {
-			currentUsersLikedIdeaIds.push(eventIdeaId);
-		}
-	}
-
-	//console.log('Reloading page.');
-	//console.log('Event ideas: ');
-	//console.log(eventIdeas);
+	//// Get the list of eventIdeas the current user likes
+	const currentUsersLikedIdeaIdsResponse = await fetch(`/api/users/${userCookieId}/likes`);
+	const currentUsersLikedIdeaIds: string[] = await currentUsersLikedIdeaIdsResponse.json();
 
 	//Sort entries by likes
 	eventIdeas.sort((idea1: EventIdea, idea2: EventIdea) => {

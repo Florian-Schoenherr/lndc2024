@@ -238,5 +238,10 @@ export async function POST({ cookies, request }) {
 
 	// Push the new event idea to your storage
 	eventIdeas.push(newEventIdea);
-	return redirect(303, '/');
+	return new Response(
+		JSON.stringify({
+			message: 'Idea successfully submited.'
+		}),
+		{ status: 200, headers: { 'Content-Type': 'application/json' } }
+	);
 }

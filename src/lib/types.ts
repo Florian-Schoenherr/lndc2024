@@ -257,5 +257,5 @@ function isWithinDistanceRange(wishedDistance: number, radius: LocationRadiusOpt
 }
 
 export type LikeDictionary = {
-	[key: string]: string[]; //key: objectID, value: list of liking users identified by ID
+	[key: string]: { list: string[]; amount: number }; //key: objectID, {list of liking users identified by ID, amount of likes}
 };

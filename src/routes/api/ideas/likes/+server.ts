@@ -1,8 +1,14 @@
 import { likeDictionary } from '$lib/data/data';
-import { error, json, redirect } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 
 export async function GET() {
-	return json(likeDictionary, { status: 201 });
+	//// Caclulate the like amount of each event
+	const eventIdeaLikes = {};
+	for (const eventIdeaId in likeDictionary) {
+		eventIdeaLikes[eventIdeaId] = likeDictionary[eventIdeaId].amount;
+	}
+
+	return json(eventIdeaLikes, { status: 201 });
 }
 
 export async function POST({ cookies, request }) {
@@ -21,48 +27,79 @@ export async function POST({ cookies, request }) {
 	if (!ideaID) {
 		return error(400, 'ideaId was missing at form data');
 	}
+
 	const likedState = formData.get('likedState');
 	if (!likedState) {
 		return error(400, 'likedState was missing at form Data');
 	}
 
-	if (!likeDictionary[ideaID]) {
-		likeDictionary[ideaID] = [];
+	const isLiked: string = likedState.toString();
+	const validValues = ['true', 'false'];
+
+	if (!validValues.includes(isLiked)) {
+		return error(400, 'likeState can be rather true or false !');
 	}
 
-	let ideaLikes = likeDictionary[ideaID];
+	//Initialize likelist for ID idea if its not present in the Dictionary.
+	if (!likeDictionary[ideaID]) {
+		likeDictionary[ideaID] = { list: [], amount: 0 };
+	}
+
+	const ideaLikes = likeDictionary[ideaID].list;
 
 	// Read form formData
-	if (likedState.toString() === 'true') {
+	if (isLiked === 'true') {
 		//Add Likes
-		//console.log('Called add Like');
+		console.log('Called add Like');
+		console.log(likeDictionary);
+		console.log(ideaLikes);
 
-		if (likeDictionary[ideaID].includes(userID.toString())) {
+		if (likeDictionary[ideaID].list.includes(userID.toString())) {
 			return error(400, 'User liked this Idea already !');
 		}
 
 		ideaLikes.push(userID.toString());
-		likeDictionary[ideaID] = ideaLikes;
-		//console.log(likeDictionary);
-		return redirect(303, '/');
+		likeDictionary[ideaID].list = ideaLikes;
+		likeDictionary[ideaID].amount = ideaLikes.length;
+
+		console.log('Result add Like');
+		console.log(likeDictionary);
+		console.log(ideaLikes);
+
+		return new Response(
+			JSON.stringify({
+				message: 'Like status updated successfully'
+			}),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
 	}
 
-	if (likedState.toString() === 'false') {
+	if (isLiked === 'false') {
 		//Remove Likes
-		//console.log('Called remove Like');
-		//console.log(likeDictionary);
-		//console.log(ideaLikes);
+		console.log('Called remove Like');
+		console.log(likeDictionary);
+		console.log(ideaLikes);
 
-		if (!likeDictionary[ideaID].includes(userID.toString())) {
+		if (!likeDictionary[ideaID].list.includes(userID.toString())) {
 			return error(400, 'Users like couldn`t be found !');
 		}
 
 		const index = ideaLikes.indexOf(userID.toString(), 0);
 		if (index > -1) {
 			ideaLikes.splice(index, 1);
-			likeDictionary[ideaID] = ideaLikes;
+			likeDictionary[ideaID].list = ideaLikes;
+			likeDictionary[ideaID].amount = ideaLikes.length;
 		}
-		return redirect(303, '/');
+
+		console.log('Result remove Like');
+		console.log(likeDictionary);
+		console.log(ideaLikes);
+
+		return new Response(
+			JSON.stringify({
+				message: 'Like status updated successfully'
+			}),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } }
+		);
 	}
-	return error(400, 'An error occured processing the form data for a like.');
 }

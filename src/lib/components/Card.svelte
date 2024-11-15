@@ -10,11 +10,35 @@
 	export let likeAmount: number = 0;
 	export let isEnabled: boolean = true;
 
+	// Handle form submission
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault(); // Prevent page reload
+		const formData = new FormData(event.target as HTMLFormElement);
+		try {
+			const response = await fetch('/api/ideas/likes', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				// Update the UI based on the response
+				console.log('Form submitted successfully', data);
+			} else {
+				console.error('Failed to submit form', await response.text());
+			}
+		} catch (error) {
+			console.error('Error submitting form', error);
+		}
+	}
+
 	function toggleLike(e: Event): void {
 		if (isLikedbyUser) {
 			isLikedbyUser = false;
+			likeAmount--; //do local UI update for likes.
 		} else {
 			isLikedbyUser = true;
+			likeAmount++; //do local UI update for likes.
 		}
 	}
 
@@ -88,7 +112,7 @@
 
 	<div class="w-20 h-full">
 		{#if isEnabled}
-			<form method="POST" action="api/ideas/likes">
+			<form onsubmit={handleSubmit}>
 				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
 				<input type="hidden" name="ideaID" value={idea.id} />
 				<input type="hidden" name="likedState" value={isLikedbyUser} />
