@@ -72,7 +72,7 @@
 <!-- {#if !mapModal} -->
 
 <div class="flex flex-col h-full">
-	<header id="header f">
+	<header id="header">
 		<h1 class="text-4xl font-bold p-2 text-center">Eventmaps Ideen</h1>
 		<div class="w-100 bg-orange-200 font-bold text-center">
 			TESTVERSION - NUR IN ZWICKAU VERFUEGBAR

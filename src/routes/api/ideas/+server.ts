@@ -232,7 +232,7 @@ export async function POST({ cookies, request }) {
 			maxDate: maxDate
 		},
 		locationRadius: locationRadius,
-		locationCoordinates: [latitude, longitude],
+		locationCoordinates: [longitude, latitude],
 		locationName: town
 	} as EventIdea;
 

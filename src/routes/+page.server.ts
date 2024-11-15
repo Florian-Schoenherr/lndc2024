@@ -1,10 +1,8 @@
-import { type EventIdea, type LikeDictionary } from '$lib/types';
+import { type EventIdea } from '$lib/types';
 import type { PageServerLoad } from './$types';
 import { v6 as uuidv6 } from 'uuid';
 
 export const load: PageServerLoad = async ({
-	url,
-	params,
 	cookies,
 	fetch
 }): Promise<{
