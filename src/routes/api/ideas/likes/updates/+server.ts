@@ -22,8 +22,8 @@ setInterval(() => {
 	// You would need to replace this with real change-detection logic for likeDictionary
 	//console.log('SERVER: idea likes', likeDictionary);
 	broadcastUpdate();
-	//console.log('SERVER: broadcasted idea likes.');
-}, 1000); // Example interval of 5 seconds for polling
+	console.log('SERVER: broadcasted idea likes.');
+}, 2000); // Example interval of 5 seconds for polling
 
 const activeConnections: { [key: string]: ReadableStreamDefaultController } = {};
 

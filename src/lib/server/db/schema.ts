@@ -1,3 +1,4 @@
+/*
 import { pgTable, serial, text, integer, timestamp, date } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
@@ -38,3 +39,4 @@ export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 
 export type EventIdeaTableEntry = typeof eventidea.$inferSelect;
+*/

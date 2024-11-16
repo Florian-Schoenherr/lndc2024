@@ -1,0 +1,11 @@
+#!/bin/bash
+USERNAME=
+HOSTNAME=
+APP_DIRECTORY_BUILD=
+APP_DIRECTORY=
+APP_DIRECTORY_DB=
+DATABASE_IMAGE_NAME=
+REMOTE_DIRECTORY=
+DATABASE_ID=
+NODE_PORT=
+NODE_HOST= #use loopback if t deploy behind a remote proxy. els use 0.0.0.0 to bind to all ips

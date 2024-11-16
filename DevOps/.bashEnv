@@ -1,0 +1,10 @@
+#!/bin/bash
+USERNAME=eventmaps
+HOSTNAME=eventmaps.eu
+APP_DIRECTORY_BUILD=/home/t777/Schreibtisch/LNDC/lndc2024/build
+APP_DIRECTORY=/home/t777/Schreibtisch/LNDC/lndc2024/
+APP_DIRECTORY_DB=
+DATABASE_IMAGE_NAME=
+REMOTE_DIRECTORY=/home/eventmaps/ideaVoting
+NODE_PORT=8082
+NODE_HOST=localhost #use localhost /(127.0.0.1) if  deploy behind a remote proxy. els use 0.0.0.0 to bind to all ips
