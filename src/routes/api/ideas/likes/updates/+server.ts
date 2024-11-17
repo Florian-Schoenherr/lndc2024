@@ -44,7 +44,13 @@ export async function GET({ params, url }) {
 				activeConnections[clientID] = controller;
 
 				// Send first message on conneciton build up
-				const firstMessage = JSON.stringify(likeDictionary);
+				//// Caclulate the like amount of each event
+				const eventIdeaLikes = {};
+				for (const eventIdeaId in likeDictionary) {
+					eventIdeaLikes[eventIdeaId] = likeDictionary[eventIdeaId].amount;
+				}
+
+				const firstMessage = JSON.stringify(eventIdeaLikes);
 				controller.enqueue(new TextEncoder().encode(`data: ${firstMessage}\n\n`));
 
 				// Clean up when client disconnects

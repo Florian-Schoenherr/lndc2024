@@ -137,7 +137,10 @@
 </script>
 
 {#if isOpen}
-	<div id="modalContainer" class="flex flex-col h-full w-full fixed top-0 left-0 bg-white p-5">
+	<div
+		id="modalContainer"
+		class="flex flex-col h-full w-full fixed top-0 left-0 bg-white p-4 gap-4"
+	>
 		<div id="titleBar" class="w-full mb-3 flex flex-row justify-between">
 			<h1 class="text-2xl font-bold text-gray-600">Idee einreichen</h1>
 
@@ -332,7 +335,7 @@
 		<input
 			form="ideaForm"
 			type="submit"
-			class="w-full py-2 px-4 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+			class="w-full h-16 bg-orange-400 text-white font-semibold rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
 			value="Einreichen"
 		/>
 	</div>

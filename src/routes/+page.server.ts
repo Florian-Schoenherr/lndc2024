@@ -78,35 +78,7 @@ export const load: PageServerLoad = async ({
 	//// Get the list of eventIdeas the current user likes
 	const currentUsersLikedIdeaIdsResponse = await fetch(`/api/users/${userCookieId}/likes`);
 	const currentUsersLikedIdeaIds: string[] = await currentUsersLikedIdeaIdsResponse.json();
-
-	//Sort entries by likes
-	eventIdeas.sort((idea1: EventIdea, idea2: EventIdea) => {
-		//console.log('Sorting');
-
-		let idea1Likes: number = eventIdeaLikes[idea1.id];
-		let idea2Likes: number = eventIdeaLikes[idea2.id];
-
-		if (!idea1Likes) {
-			idea1Likes = 0;
-		}
-
-		if (!idea2Likes) {
-			idea2Likes = 0;
-		}
-
-		//console.log(`idea1Likes: ${idea1Likes} idea2Likes: ${idea2Likes}`);
-
-		if (idea1Likes === idea2Likes) {
-			//console.log('sorted equals');
-			return 0;
-		}
-		if (idea1Likes < idea2Likes) {
-			//console.log('sorted less');
-			return 1;
-		}
-		//console.log('sorted more');
-		return -1;
-	});
+	//console.log(currentUsersLikedIdeaIds);
 
 	return {
 		userId: userCookieId,

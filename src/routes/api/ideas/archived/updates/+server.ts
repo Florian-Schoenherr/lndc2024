@@ -1,7 +1,40 @@
-import { archivedEventIdeas } from '$lib/data/data.js';
+import { archivedEventIdeas, likeDictionary } from '$lib/data/data.js';
+import type { EventIdea } from '$lib/types';
 import { error } from '@sveltejs/kit';
 
 function broadcastUpdate() {
+	archivedEventIdeas.sort((idea1: EventIdea, idea2: EventIdea) => {
+		//console.log('Sorting');
+
+		let idea1Entry = likeDictionary[idea1.id];
+		let idea2Entry = likeDictionary[idea2.id];
+
+		//idea entry could be undefined if the idea was just set but not liked.
+		let idea1Likes: number = 0;
+		let idea2Likes: number = 0;
+
+		if (idea1Entry?.amount) {
+			idea1Likes = idea1Entry.amount;
+		}
+
+		if (idea2Entry?.amount) {
+			idea2Likes = idea2Entry.amount;
+		}
+
+		//console.log(`idea1Likes: ${idea1Likes} idea2Likes: ${idea2Likes}`);
+
+		if (idea1Likes === idea2Likes) {
+			//console.log('sorted equals');
+			return 0;
+		}
+		if (idea1Likes < idea2Likes) {
+			//console.log('sorted less');
+			return 1;
+		}
+		//console.log('sorted more');
+		return -1;
+	});
+
 	for (const connectionEntry in activeConnections) {
 		const currentConnectionController = activeConnections[connectionEntry];
 
@@ -16,7 +49,7 @@ setInterval(() => {
 	// You would need to replace this with real change-detection logic for archivedEventIdeas
 	//console.log('SERVER: idea likes', archivedEventIdeas);
 	broadcastUpdate();
-	console.log('SERVER: archived ideas.');
+	console.log('SERVER: broadcasted archived ideas.');
 }, 2000); // Example interval of 5 seconds for polling
 
 const activeConnections: { [key: string]: ReadableStreamDefaultController } = {};
@@ -36,10 +69,6 @@ export async function GET({ url }) {
 
 				//document connection
 				activeConnections[clientID] = controller;
-
-				// Send first message on conneciton build up
-				const firstMessage = JSON.stringify(archivedEventIdeas);
-				controller.enqueue(new TextEncoder().encode(`data: ${firstMessage}\n\n`));
 
 				// Clean up when client disconnects
 				/*request.signal.addEventListener('abort', () => {

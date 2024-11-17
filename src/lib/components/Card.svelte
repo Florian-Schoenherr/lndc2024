@@ -1,8 +1,9 @@
 <script lang="ts">
 	import LikeButton from './LikeButton.svelte';
 	import { localizations, type EventIdea } from '../types';
-	import { votingDuration } from '$lib/data/data';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { Diameter } from 'lucide-svelte';
 
 	export let idea: EventIdea;
 	export let link: string;
@@ -10,36 +11,15 @@
 	export let likeAmount: number = 0;
 	export let isEnabled: boolean = true;
 
-	// Handle form submission
-	async function handleSubmit(event: SubmitEvent) {
-		event.preventDefault(); // Prevent page reload
-		const formData = new FormData(event.target as HTMLFormElement);
-		try {
-			const response = await fetch('/api/ideas/likes', {
-				method: 'POST',
-				body: formData
-			});
+	export let onLikeClick: (eventID: string, oldLikedState: boolean) => any;
 
-			if (response.ok) {
-				const data = await response.json();
-				// Update the UI based on the response
-				console.log('Form submitted successfully', data);
-			} else {
-				console.error('Failed to submit form', await response.text());
-			}
-		} catch (error) {
-			console.error('Error submitting form', error);
-		}
-	}
+	/*
+	$: console.log(
+		`Card changed to eventTitle: ${idea.title} likes: ${likeAmount} isLikesByuser: ${isLikedbyUser}`
+	);*/
 
-	function toggleLike(e: Event): void {
-		if (isLikedbyUser) {
-			isLikedbyUser = false;
-			likeAmount--; //do local UI update for likes.
-		} else {
-			isLikedbyUser = true;
-			likeAmount++; //do local UI update for likes.
-		}
+	function handleClick() {
+		onLikeClick(idea.id, isLikedbyUser);
 	}
 
 	function navigateToDetails() {
@@ -111,14 +91,10 @@
 
 	<div class="w-20 h-full">
 		{#if isEnabled}
-			<form onsubmit={handleSubmit}>
-				<LikeButton click={toggleLike} likes={likeAmount} {isLikedbyUser} />
-				<input type="hidden" name="ideaID" value={idea.id} />
-				<input type="hidden" name="likedState" value={isLikedbyUser} />
-			</form>
+			<LikeButton onClick={handleClick} likes={likeAmount} {isLikedbyUser} />
 		{/if}
 		{#if !isEnabled}
-			<LikeButton click={() => {}} likes={likeAmount} {isLikedbyUser} />
+			<LikeButton onClick={() => {}} likes={likeAmount} {isLikedbyUser} />
 		{/if}
 	</div>
 </div>

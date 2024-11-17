@@ -89,7 +89,7 @@
 	});
 </script>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full gap-2">
 	<header id="header">
 		<h1 class="text-4xl font-bold p-2 text-center">Details</h1>
 	</header>
@@ -218,11 +218,8 @@
 		</div>
 	</main>
 
-	<footer id="footer" class="h-20 w-full flex items-center justify-center">
-		<button
-			class="w-full h-full text-2xl bg-orange-400 text-white font-bold"
-			onclick={navigateHome}
-		>
+	<footer id="footer" class=" w-full flex items-center justify-center">
+		<button class="h-16 w-full text-2xl bg-orange-400 text-white font-bold" onclick={navigateHome}>
 			Zurück
 		</button>
 	</footer>
