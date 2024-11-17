@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="px-5 py-3 w-100 flex flex-row gap-2">
+<div class="p-4 w-100 flex flex-row gap-2 bg-gray-100 rounded-lg shadow-md">
 	<div
 		class="flex-grow"
 		onclick={navigateToDetails}

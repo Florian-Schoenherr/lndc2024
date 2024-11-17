@@ -175,7 +175,7 @@
 		</div>
 	</header>
 
-	<main class="flex-grow overflow-y-auto">
+	<main class="flex-grow overflow-y-auto flex flex-col gap-2 w-full">
 		{#if !displayArchiv}
 			{#each eventIdeas as idea (idea.id)}
 				<Card
